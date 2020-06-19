@@ -11,7 +11,7 @@ exports.connect = () => {
 	exports.socket = new net.Socket();
 
 	this.socket.connect({ port: config.server.port, host: config.server.host }, () => {
-		this.socket.write(`${config.server.rcon_password}\n`);
+		this.socket.write(`${config.server.rcon_password || process.env.RCON_PASSWORD}\n`);
 
 		console.log(`Connected to ${this.socket.localAddress}:${this.socket.localPort}`);
 		isConnected = true;
