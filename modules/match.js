@@ -15,7 +15,7 @@ exports.decidedTeams = () => {
 
 	//announce teams
 	let channel = client.channels.cache.get(config.gather_general);
-	channel.send(`**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${config.server.host}:${config.server.port}/>`);
+	channel.send(`**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.socket.remoteAddress}:${tcpr.socket.remotePort}/>`);
 	console.log(`Blue Team: ${blueTeam.map((player) => player.username).join(" ")}`);
 	console.log(`Red Team: ${redTeam.map((player) => player.username).join(" ")}`);
 };
