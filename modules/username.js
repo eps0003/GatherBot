@@ -1,6 +1,6 @@
 const util = require("./utilities.js");
 const { client } = require("../index.js");
-const config = require("./config.json");
+const config = require("../config.json");
 
 var usernames = {};
 
