@@ -1,0 +1,20 @@
+{
+	"token": "",
+	"prefix": "!",
+	"guild": "",
+
+	"tcpr_reconnect_interval": 30000,
+
+	"gather_general": "",
+	"admin_role": "",
+	"queue_role": "",
+	"blue_team_role": "",
+	"red_team_role": "",
+	"queue_size": 10,
+
+	"server": {
+		"host": "",
+		"port": 50301,
+		"rcon_password": ""
+	}
+}
