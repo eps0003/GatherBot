@@ -1,4 +1,5 @@
 const util = require("./utilities.js");
+const { client } = require("../index.js");
 
 var usernames = {};
 
