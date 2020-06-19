@@ -1,6 +1,6 @@
 const config = require("../config.json");
 const { client } = require("../index.js");
-const { getKAGUsername, showLinkInstructions } = require("./username.js");
+const link = require("./link.js");
 const match = require("./match.js");
 const teams = require("./teams.js");
 const util = require("./utilities.js");
@@ -12,14 +12,14 @@ exports.add = (member) => {
 	let name = member.nickname || member.user.username;
 	let channel = client.channels.cache.get(config.gather_general);
 
-	getKAGUsername(member, (username) => {
+	link.getKAGUsername(member, (username) => {
 		if (username) {
 			if (!this.has(member)) {
 				queue.push({ member, username });
 				member.roles.add(config.queue_role);
 
 				channel.send(`**${name}** has been **added** to the queue (${queue.length}/${this.getSize()})`);
-				console.log(`Added ${member.user.tag} to the queue (${queue.length}/${this.getSize()})`);
+				console.log(`Added ${username} (${member.user.tag}) to the queue (${queue.length}/${this.getSize()})`);
 
 				util.updatePresence();
 				this.checkQueueFull();
@@ -27,7 +27,7 @@ exports.add = (member) => {
 				channel.send(`**${name}** is already in the queue (${queue.length}/${this.getSize()})`);
 			}
 		} else {
-			showLinkInstructions();
+			link.showLinkInstructions();
 		}
 	});
 };
@@ -37,12 +37,13 @@ exports.remove = (member) => {
 	let channel = client.channels.cache.get(config.gather_general);
 
 	for (let i in queue) {
-		if (queue[i].member === member) {
+		let player = queue[i];
+		if (player.member === member) {
 			queue.splice(i, 1);
 			member.roles.remove(config.queue_role);
 			util.updatePresence();
 			channel.send(`**${name}** has been **removed** from the queue (${queue.length}/${this.getSize()})`);
-			console.log(`Removed ${member.user.tag} from the queue (${queue.length}/${this.getSize()})`);
+			console.log(`Removed ${player.username} (${member.user.tag}) from the queue (${queue.length}/${this.getSize()})`);
 			return;
 		}
 	}

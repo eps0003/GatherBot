@@ -10,7 +10,7 @@ const tcpr = require("./modules/tcpr.js");
 const queue = require("./modules/queue.js");
 const match = require("./modules/match.js");
 const teams = require("./modules/teams.js");
-const { showLinkInstructions } = require("./modules/username.js");
+const link = require("./modules/link.js");
 
 client.on("error", console.error);
 
@@ -95,7 +95,7 @@ client.on("message", async (message) => {
 	} else if (command === "ping") {
 		message.channel.send("Pong!");
 	} else if (command === "link") {
-		showLinkInstructions();
+		link.showLinkInstructions();
 	} else if (!tcpr.isConnected()) {
 		message.channel.send("The bot is unable to connect to the Gather server right now. Please try again later");
 	} else if (command === "add") {

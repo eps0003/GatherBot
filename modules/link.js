@@ -6,7 +6,7 @@ var usernames = {};
 
 exports.getKAGUsername = (member, callback) => {
 	//get cached username
-	if (usernames.hasOwnProperty(member.id)) {
+	if (isUsernameCached(member)) {
 		callback(usernames[member.id]);
 		return;
 	}
@@ -25,6 +25,10 @@ exports.getKAGUsername = (member, callback) => {
 			callback("");
 		}
 	}, `https://api.kag2d.com/v1/players?filters=[{"field":"discord","op":"eq","value":"${member.id}"}]`);
+};
+
+exports.isUsernameCached = (member) => {
+	return usernames.hasOwnProperty(member.id);
 };
 
 exports.showLinkInstructions = () => {
