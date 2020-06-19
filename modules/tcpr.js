@@ -10,7 +10,7 @@ exports.socket;
 exports.connect = () => {
 	exports.socket = new net.Socket();
 
-	this.socket.connect({ port: config.server.port, host: config.server.host }, () => {
+	this.socket.connect({ port: config.server.port || process.env.SERVER_PORT, host: config.server.host || process.env.SERVER_HOST }, () => {
 		this.socket.write(`${config.server.rcon_password || process.env.RCON_PASSWORD}\n`);
 
 		console.log(`Connected to ${this.socket.localAddress}:${this.socket.localPort}`);
