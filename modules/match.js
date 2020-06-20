@@ -5,20 +5,6 @@ const tcpr = require("./tcpr.js");
 
 var matchIsLive = false;
 
-exports.decidedTeams = () => {
-	let blueTeam = teams.getBlueTeam();
-	let redTeam = teams.getRedTeam();
-
-	let blueTeamMentions = blueTeam.map((player) => player.member.toString()).join(" ");
-	let redTeamMentions = redTeam.map((player) => player.member.toString()).join(" ");
-
-	//announce teams
-	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
-	channel.send(`**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`);
-	console.log(`Blue Team: ${blueTeam.map((player) => player.username).join(" ")}`);
-	console.log(`Red Team: ${redTeam.map((player) => player.username).join(" ")}`);
-};
-
 exports.matchStarted = () => {
 	matchIsLive = true;
 	console.log("Match started");

@@ -107,6 +107,7 @@ exports.checkQueueFull = () => {
 
 		util.updatePresence();
 		teams.splitIntoTeams(players);
+		teams.announceTeams();
 	}
 };
 

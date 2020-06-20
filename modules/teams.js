@@ -57,16 +57,34 @@ exports.splitIntoTeams = (players) => {
 	}
 
 	syncTeams();
-	match.decidedTeams();
 };
 
 exports.scramble = () => {
 	this.splitIntoTeams(getPlayers());
 };
 
-function getPlayers() {
+exports.getPlayers = () => {
 	return blueTeam.concat(redTeam);
-}
+};
+
+exports.announceTeams = () => {
+	let blueTeam = teams.getBlueTeam();
+	let redTeam = teams.getRedTeam();
+
+	let blueTeamMentions = blueTeam.map((player) => player.member.toString()).join(" ");
+	let redTeamMentions = redTeam.map((player) => player.member.toString()).join(" ");
+
+	//announce teams
+	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+	channel.send(`**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`);
+	console.log(`Blue Team: ${blueTeam.map((player) => player.username).join(" ")}`);
+	console.log(`Red Team: ${redTeam.map((player) => player.username).join(" ")}`);
+
+	let players = teams.getPlayers();
+	for (let player of players) {
+		player.member.send(`**Your Gather match is about to start!**\n**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`);
+	}
+};
 
 function syncTeams() {
 	let blueText = `string[] blue = {${blueTeam.map((player) => `'${player.username}'`).join(", ")}}; `;
