@@ -86,7 +86,7 @@ client.on("message", async (message) => {
 		}
 	} else if (command === "team") {
 		if (match.isInProgress()) {
-			let name = message.member.nickname || message.author.username;
+			let name = message.member.displayName;
 			let team = teams.getTeam(message.member);
 			switch (team) {
 				case 0:
@@ -142,8 +142,7 @@ client.on("message", async (message) => {
 			if (username) {
 				queue.add(member);
 			} else {
-				let name = member.nickname || member.user.username;
-				message.channel.send(`**${name}** is yet to link their Discord account to their KAG account`);
+				message.channel.send(`**${message.member.displayName}** is yet to link their Discord account to their KAG account`);
 			}
 		});
 	} else if (["forcerem", "forceremove"].includes(command)) {
@@ -215,7 +214,7 @@ client.on("message", async (message) => {
 
 		let member = message.mentions.members.first();
 		let username = args[1];
-		let name = member.nickname || member.user.username;
+		let name = message.member.displayName;
 
 		if (member.user.bot) {
 			message.channel.send(`**${name}** is a bot and cannot be linked to an account`);
