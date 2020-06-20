@@ -15,7 +15,7 @@ exports.getKAGUsername = (member, callback) => {
 		if (data && data.playerList.length > 0) {
 			//store username in cache
 			let username = data.playerList[0].username;
-			usernames[member.id] = username;
+			this.cache(member, username);
 
 			//found username
 			callback(username);
@@ -26,8 +26,25 @@ exports.getKAGUsername = (member, callback) => {
 	}, `https://api.kag2d.com/v1/players?filters=[{"field":"discord","op":"eq","value":"${member.id}"}]`);
 };
 
+exports.cache = (member, username) => {
+	usernames[member.id] = username;
+};
+
+exports.clearCache = () => {
+	usernames = {};
+};
+
 exports.isUsernameCached = (member) => {
 	return usernames.hasOwnProperty(member.id);
+};
+
+exports.getCachedMember = (username) => {
+	let index = Object.values(usernames).indexOf(username);
+	if (index > -1) {
+		let id = Object.keys(usernames)[index];
+		return client.guilds.cache.get(process.env.GUILD).members.cache.get(id);
+	}
+	return null;
 };
 
 exports.showLinkInstructions = () => {
