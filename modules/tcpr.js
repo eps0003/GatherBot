@@ -63,7 +63,9 @@ exports.connect = () => {
 			match.matchStarted();
 		} else if (command === "ended") {
 			var winner = Number(args[0]);
-			match.matchEnded(winner);
+			var duration = Number(args[1]);
+			var map = args[2];
+			match.matchEnded(winner, duration, map);
 		} else if (command === "scramble") {
 			teams.scramble();
 		} else if (command === "status") {
@@ -86,7 +88,7 @@ exports.getAddress = () => {
 
 function connectionEnded() {
 	queue.clear();
-	match.matchEnded(-1);
+	match.matchEnded();
 	isConnected = false;
 
 	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
