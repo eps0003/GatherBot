@@ -75,7 +75,7 @@ exports.announceTeams = () => {
 	let redTeamMentions = redTeam.map((player) => player.member.toString()).join(" ");
 
 	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
-	channel.send(`**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`);
+	channel.send(`**A Gather match is about to start!**\n**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`);
 	console.log(`Blue Team: ${blueTeam.map((player) => player.username).join(" ")}`);
 	console.log(`Red Team: ${redTeam.map((player) => player.username).join(" ")}`);
 
