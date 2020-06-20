@@ -32,7 +32,7 @@ exports.connect = () => {
 		switch (err.code) {
 			case "ECONNREFUSED":
 				if (!sentWarning) {
-					console.log(`Cannot connect to ${exports.getAddress()}`);
+					console.log(`Cannot connect to ${err.address}:${err.port}`);
 					sentWarning = true;
 				}
 				setTimeout(this.connect, process.env.TCPR_RECONNECT_INTERVAL_MS);

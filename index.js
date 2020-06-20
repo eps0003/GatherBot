@@ -127,7 +127,7 @@ client.on("message", async (message) => {
 		}
 	} else if (command === "forceadd") {
 		if (!isAdmin) {
-			message.channel.send(`Only an admin can use this command`);
+			message.channel.send("Only an admin can use this command");
 			return;
 		}
 
@@ -148,7 +148,7 @@ client.on("message", async (message) => {
 		});
 	} else if (["forcerem", "forceremove"].includes(command)) {
 		if (!isAdmin) {
-			message.channel.send(`Only an admin can use this command`);
+			message.channel.send("Only an admin can use this command");
 			return;
 		}
 
@@ -161,7 +161,7 @@ client.on("message", async (message) => {
 		queue.remove(member);
 	} else if (["setqueue", "queuesize"].includes(command)) {
 		if (!isAdmin) {
-			message.channel.send(`Only an admin can use this command`);
+			message.channel.send("Only an admin can use this command");
 			return;
 		}
 
@@ -185,7 +185,7 @@ client.on("message", async (message) => {
 		queue.setSize(size);
 	} else if (["clear", "clearqueue"].includes(command)) {
 		if (!isAdmin) {
-			message.channel.send(`Only an admin can use this command`);
+			message.channel.send("Only an admin can use this command");
 			return;
 		}
 
@@ -193,7 +193,7 @@ client.on("message", async (message) => {
 		message.channel.send("Cleared the queue");
 	} else if (["end", "endmatch"].includes(command)) {
 		if (!isAdmin) {
-			message.channel.send(`Only an admin can use this command`);
+			message.channel.send("Only an admin can use this command");
 			return;
 		}
 
@@ -204,7 +204,7 @@ client.on("message", async (message) => {
 		}
 	} else if (command === "templink") {
 		if (!isAdmin) {
-			message.channel.send(`Only an admin can use this command`);
+			message.channel.send("Only an admin can use this command");
 			return;
 		}
 
@@ -254,7 +254,7 @@ client.on("message", async (message) => {
 		});
 	} else if (command === "clearcache") {
 		if (!isAdmin) {
-			message.channel.send(`Only an admin can use this command`);
+			message.channel.send("Only an admin can use this command");
 			return;
 		}
 
