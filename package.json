@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0",
     "log-timestamp": "^0.3.0",
     "xmlhttprequest": "^1.8.0"
   }

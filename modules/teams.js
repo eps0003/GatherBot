@@ -1,4 +1,3 @@
-const config = require("../config.json");
 const tcpr = require("./tcpr.js");
 const match = require("./match.js");
 const util = require("./utilities.js");
@@ -9,8 +8,8 @@ var redTeam = [];
 exports.clear = () => {
 	blueTeam = [];
 	redTeam = [];
-	util.clearRole(config.blue_team_role);
-	util.clearRole(config.red_team_role);
+	util.clearRole(process.env.BLUE_TEAM_ROLE);
+	util.clearRole(process.env.RED_TEAM_ROLE);
 };
 
 exports.getTeam = (member) => {
@@ -49,12 +48,12 @@ exports.splitIntoTeams = (players) => {
 
 	//add team roles to players
 	for (let player of blueTeam) {
-		player.member.roles.remove(config.red_team_role);
-		player.member.roles.add(config.blue_team_role);
+		player.member.roles.remove(process.env.RED_TEAM_ROLE);
+		player.member.roles.add(process.env.BLUE_TEAM_ROLE);
 	}
 	for (let player of redTeam) {
-		player.member.roles.remove(config.blue_team_role);
-		player.member.roles.add(config.red_team_role);
+		player.member.roles.remove(process.env.BLUE_TEAM_ROLE);
+		player.member.roles.add(process.env.RED_TEAM_ROLE);
 	}
 
 	syncTeams();

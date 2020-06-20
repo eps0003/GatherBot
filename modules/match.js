@@ -1,4 +1,3 @@
-const config = require("../config.json");
 const { client } = require("../index.js");
 const teams = require("./teams.js");
 const queue = require("./queue.js");
@@ -14,7 +13,7 @@ exports.decidedTeams = () => {
 	let redTeamMentions = redTeam.map((player) => player.member.toString()).join(" ");
 
 	//announce teams
-	let channel = client.channels.cache.get(config.gather_general);
+	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 	channel.send(`**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.socket.remoteAddress}:${tcpr.socket.remotePort}/>`);
 	console.log(`Blue Team: ${blueTeam.map((player) => player.username).join(" ")}`);
 	console.log(`Red Team: ${redTeam.map((player) => player.username).join(" ")}`);
@@ -36,7 +35,7 @@ exports.matchEnded = (winner) => {
 	teams.clear();
 
 	//announce winner
-	let channel = client.channels.cache.get(config.gather_general);
+	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 
 	if (winner == 0 || winner == 1) {
 		var teamNames = ["Blue Team", "Red Team"];

@@ -1,4 +1,3 @@
-const config = require("../config.json");
 const { client } = require("../index.js");
 const link = require("./link.js");
 const match = require("./match.js");
@@ -6,17 +5,17 @@ const teams = require("./teams.js");
 const util = require("./utilities.js");
 
 var queue = [];
-var size = config.queue_size;
+var size = process.env.QUEUE_SIZE;
 
 exports.add = (member) => {
 	let name = member.nickname || member.user.username;
-	let channel = client.channels.cache.get(config.gather_general);
+	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 
 	link.getKAGUsername(member, (username) => {
 		if (username) {
 			if (!this.has(member)) {
 				queue.push({ member, username });
-				member.roles.add(config.queue_role);
+				member.roles.add(process.env.QUEUE_ROLE);
 
 				channel.send(`**${name}** has been **added** to the queue (${queue.length}/${this.getSize()})`);
 				console.log(`Added ${username} (${member.user.tag}) to the queue (${queue.length}/${this.getSize()})`);
@@ -34,13 +33,13 @@ exports.add = (member) => {
 
 exports.remove = (member) => {
 	let name = member.nickname || member.user.username;
-	let channel = client.channels.cache.get(config.gather_general);
+	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 
 	for (let i in queue) {
 		let player = queue[i];
 		if (player.member === member) {
 			queue.splice(i, 1);
-			member.roles.remove(config.queue_role);
+			member.roles.remove(process.env.QUEUE_ROLE);
 			util.updatePresence();
 			channel.send(`**${name}** has been **removed** from the queue (${queue.length}/${this.getSize()})`);
 			console.log(`Removed ${player.username} (${member.user.tag}) from the queue (${queue.length}/${this.getSize()})`);
@@ -53,7 +52,7 @@ exports.remove = (member) => {
 
 exports.clear = () => {
 	queue = [];
-	util.clearRole(config.queue_role);
+	util.clearRole(process.env.QUEUE_ROLE);
 	util.updatePresence();
 };
 
@@ -77,7 +76,7 @@ exports.getSize = () => {
 exports.setSize = (newSize) => {
 	size = newSize;
 
-	let channel = client.channels.cache.get(config.gather_general);
+	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 	channel.send(`The queue has been changed to a size of **${size} ${util.plural(size, "player")}**`);
 	console.log(`Set queue size to ${size} ${util.plural(size, "player")}`);
 
@@ -103,7 +102,7 @@ exports.checkQueueFull = () => {
 
 		// remove queue role from players
 		for (let player of players) {
-			player.member.roles.remove(config.queue_role);
+			player.member.roles.remove(process.env.QUEUE_ROLE);
 		}
 
 		util.updatePresence();

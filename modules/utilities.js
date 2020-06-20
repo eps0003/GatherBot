@@ -1,5 +1,4 @@
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-const config = require("../config.json");
 const { client } = require("../index.js");
 const queue = require("./queue.js");
 
@@ -8,10 +7,10 @@ const queue = require("./queue.js");
 // 	if (typeof role === "object") return role;
 // 	if (/<@&\d+>/.test(role) || !isNaN(role)) {
 // 		//mention or ID
-// 		role = client.guilds.get(config.guild).roles.get(role.match(/\d+/)[0]);
+// 		role = client.guilds.get(process.env.GUILD).roles.get(role.match(/\d+/)[0]);
 // 	} else {
 // 		//name
-// 		role = client.guilds.get(config.guild).roles.find((x) => x.name.toLowerCase() === role.toLowerCase());
+// 		role = client.guilds.get(process.env.GUILD).roles.find((x) => x.name.toLowerCase() === role.toLowerCase());
 // 	}
 // 	return role || null;
 // };
@@ -21,16 +20,16 @@ const queue = require("./queue.js");
 // 	if (typeof user === "object") return user;
 // 	if (/<@!?\d+>/.test(user) || !isNaN(user)) {
 // 		//mention or ID
-// 		user = client.guilds.get(config.guild).members.get(user.match(/\d+/)[0]);
+// 		user = client.guilds.get(process.env.GUILD).members.get(user.match(/\d+/)[0]);
 // 	} else if (/.+#\d{4}$/.test(user)) {
 // 		//tag
 // 		user = client.guilds
-// 			.get(config.guild)
+// 			.get(process.env.GUILD)
 // 			.members.array()
 // 			.find((x) => user === `${x.user.username}#${x.user.discriminator}`);
 // 	} else {
 // 		//name
-// 		let guildMembers = client.guilds.get(config.guild).members;
+// 		let guildMembers = client.guilds.get(process.env.GUILD).members;
 // 		user = guildMembers.find((x) => x.user.username.toLowerCase() === user.toLowerCase()) || guildMembers.find((x) => (x.nickname || x.user.username).toLowerCase() === user.toLowerCase()) || guildMembers.find((x) => x.user.username.toLowerCase().includes(user.toLowerCase())) || guildMembers.find((x) => (x.nickname || x.user.username).toLowerCase().includes(user.toLowerCase()));
 // 	}
 // 	return user || null;
@@ -38,14 +37,14 @@ const queue = require("./queue.js");
 
 // exports.getChannel = (channel) => {
 // 	if (typeof channel === "object") return channel;
-// 	return client.guilds.get(config.guild).channels.get(channel) || null;
+// 	return client.guilds.get(process.env.GUILD).channels.get(channel) || null;
 // };
 
 // exports.userHasRole = (user, role) => {
 // 	user = this.getUser(user);
 // 	role = this.getRole(role);
 // 	if (!user || !role) return false;
-// 	return client.guilds.get(config.guild).members.get(user.id).roles.has(role.id);
+// 	return client.guilds.get(process.env.GUILD).members.get(user.id).roles.has(role.id);
 // };
 
 // exports.addRole = (user, role, callback) => {
@@ -60,7 +59,7 @@ const queue = require("./queue.js");
 // 		let roles = role.map((x) => this.getRole(x)).filter(Boolean);
 
 // 		client.guilds
-// 			.get(config.guild)
+// 			.get(process.env.GUILD)
 // 			.members.get(user.id)
 // 			.addRoles(roles)
 // 			.then(
@@ -83,7 +82,7 @@ const queue = require("./queue.js");
 // 		}
 
 // 		client.guilds
-// 			.get(config.guild)
+// 			.get(process.env.GUILD)
 // 			.members.get(user.id)
 // 			.addRole(role)
 // 			.then(
@@ -112,7 +111,7 @@ const queue = require("./queue.js");
 // 		let roles = role.map((x) => this.getRole(x)).filter(Boolean);
 
 // 		client.guilds
-// 			.get(config.guild)
+// 			.get(process.env.GUILD)
 // 			.members.get(user.id)
 // 			.removeRoles(roles)
 // 			.then(
@@ -135,7 +134,7 @@ const queue = require("./queue.js");
 // 		}
 
 // 		client.guilds
-// 			.get(config.guild)
+// 			.get(process.env.GUILD)
 // 			.members.get(user.id)
 // 			.removeRole(role)
 // 			.then(
@@ -176,13 +175,13 @@ exports.XMLHttpRequest = (callback, url) => {
 
 exports.clearRole = (role) => {
 	client.guilds.cache
-		.get(config.guild)
+		.get(process.env.GUILD)
 		.roles.cache.get(role)
 		.members.forEach((member) => member.roles.remove(role));
 };
 
 exports.updatePresence = () => {
-	client.user.setActivity(`${queue.getPlayerCount()}/${queue.getSize()} in queue | ${config.prefix}help`, { type: "WATCHING" });
+	client.user.setActivity(`${queue.getPlayerCount()}/${queue.getSize()} in queue | ${process.env.PREFIX}help`, { type: "WATCHING" });
 };
 
 // exports.sendMessage = (channel, text, delete_message = false) => {
@@ -192,7 +191,7 @@ exports.updatePresence = () => {
 // 		.send(text)
 // 		.then((message) => {
 // 			if (delete_message) {
-// 				this.deleteMessage(message, config.delete_response_secs * 1000);
+// 				this.deleteMessage(message, process.env.DELETE_RESPONSE_SECS * 1000);
 // 			}
 // 		})
 // 		.catch((err) => {
@@ -207,7 +206,7 @@ exports.updatePresence = () => {
 // 		.then((message) => {
 // 			if (callback) callback();
 // 			if (delete_message) {
-// 				this.deleteMessage(message, config.delete_response_secs * 1000);
+// 				this.deleteMessage(message, process.env.DELETE_RESPONSE_SECS * 1000);
 // 			}
 // 		})
 // 		.catch((err) => {
@@ -223,7 +222,7 @@ exports.updatePresence = () => {
 // 			message.delete().catch((err) => {
 // 				this.error(`Couldn't auto delete message in #${message.channel.name}`, err);
 // 			});
-// 		}, config.delete_response_secs * 1000);
+// 		}, process.env.DELETE_RESPONSE_SECS * 1000);
 // 	} else {
 // 		message.delete().catch((err) => {
 // 			this.error(`Couldn't delete message in #${message.channel.name}`, err);
@@ -249,14 +248,14 @@ exports.updatePresence = () => {
 // };
 
 // exports.isMod = (user) => {
-// 	return config.mod_roles.some((role) => {
+// 	return process.env.MOD_ROLES.split(" ").some((role) => {
 // 		return this.userHasRole(user, role);
 // 	});
 // };
 
 // exports.updatePresence = (servers) => {
 // 	let total_players = servers ? servers.reduce((t, x) => t + x.currentPlayers, 0) : 0;
-// 	let text = `with ${total_players} ${this.plural(total_players, "fishy", "ies", 1)} | ${config.prefix}help`;
+// 	let text = `with ${total_players} ${this.plural(total_players, "fishy", "ies", 1)} | ${process.env.PREFIX}help`;
 // 	client.user.setActivity(text, { type: "PLAYING" });
 // };
 

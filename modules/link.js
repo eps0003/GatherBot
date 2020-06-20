@@ -1,12 +1,11 @@
 const util = require("./utilities.js");
 const { client } = require("../index.js");
-const config = require("../config.json");
 
 var usernames = {};
 
 exports.getKAGUsername = (member, callback) => {
 	//get cached username
-	if (isUsernameCached(member)) {
+	if (this.isUsernameCached(member)) {
 		callback(usernames[member.id]);
 		return;
 	}
@@ -32,6 +31,6 @@ exports.isUsernameCached = (member) => {
 };
 
 exports.showLinkInstructions = () => {
-	let channel = client.channels.cache.get(config.gather_general);
+	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 	channel.send("To link your Discord account to your KAG account, go to https://kag2d.com/en/discord and follow the instructions");
 };

@@ -1,5 +1,4 @@
 const net = require("net");
-const config = require("../config.json");
 
 var isConnected = false;
 var sentWarning = false;
@@ -10,8 +9,8 @@ exports.socket;
 exports.connect = () => {
 	exports.socket = new net.Socket();
 
-	this.socket.connect({ port: config.server.port || process.env.SERVER_PORT, host: config.server.host || process.env.SERVER_HOST }, () => {
-		this.socket.write(`${config.server.rcon_password || process.env.RCON_PASSWORD}\n`);
+	this.socket.connect({ port: process.env.SERVER_PORT, host: process.env.SERVER_HOST }, () => {
+		this.socket.write(`${process.env.RCON_PASSWORD}\n`);
 
 		console.log(`Connected to ${this.socket.localAddress}:${this.socket.localPort}`);
 		isConnected = true;
@@ -29,7 +28,7 @@ exports.connect = () => {
 					console.log(`Cannot connect to ${err.address}:${err.port}`);
 					sentWarning = true;
 				}
-				setTimeout(this.connect, config.tcpr_reconnect_interval);
+				setTimeout(this.connect, process.env.TCPR_RECONNECT_INTERVAL_MS);
 				break;
 			case "ECONNRESET":
 				connectionEnded();
@@ -50,5 +49,5 @@ exports.isConnected = () => {
 function connectionEnded() {
 	console.log("Lost connection with server");
 	isConnected = false;
-	setTimeout(exports.connect, config.tcpr_reconnect_interval);
+	setTimeout(exports.connect, process.env.TCPR_RECONNECT_INTERVAL_MS);
 }

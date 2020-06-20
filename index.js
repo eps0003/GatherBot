@@ -1,10 +1,10 @@
 require("log-timestamp")(() => `[${new Date().toTimeString().split(" ")[0]}] %s`);
+require("dotenv").config();
 
 const Discord = require("discord.js");
 const client = new Discord.Client();
 exports.client = client;
 
-const config = require("./config.json");
 const util = require("./modules/utilities.js");
 const tcpr = require("./modules/tcpr.js");
 const queue = require("./modules/queue.js");
@@ -23,7 +23,7 @@ client.on("ready", () => {
 	teams.clear();
 
 	tcpr.socket.on("connect", () => {
-		let channel = client.channels.cache.get(config.gather_general);
+		let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 		channel.send("**The bot has successfully established a connection with the Gather server and is ready for use**");
 	});
 
@@ -49,12 +49,12 @@ client.on("ready", () => {
 			var blueTickets = Number(args[0]);
 			var redTickets = Number(args[1]);
 
-			let channel = client.channels.cache.get(config.gather_general);
+			let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 			channel.send(`**Blue Tickets:** ${blueTickets}\n**Red Tickets:** ${redTickets}`);
 		}
 	});
 	tcpr.socket.on("end", () => {
-		let channel = client.channels.cache.get(config.gather_general);
+		let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 		channel.send("**The Gather server just went down and, as a result, the bot will no longer be accepting some Gather-related commands. The bot will automatically attempt to re-establish a connection with the server**");
 
 		//begin attempts at reconnecting
@@ -64,20 +64,20 @@ client.on("ready", () => {
 });
 
 client.on("message", async (message) => {
-	let wrongGuild = message.guild && message.guild.id !== config.guild;
-	let wrongChannel = message.channel.id !== config.gather_general;
+	let wrongGuild = message.guild && message.guild.id !== process.env.GUILD;
+	let wrongChannel = message.channel.id !== process.env.GATHER_GENERAL;
 	let botMessage = message.author.bot;
-	let wrongPrefix = message.content.indexOf(config.prefix) !== 0;
+	let wrongPrefix = message.content.indexOf(process.env.PREFIX) !== 0;
 	if (wrongGuild || wrongChannel || botMessage || wrongPrefix) {
 		return;
 	}
 
-	const args = message.content.slice(config.prefix.length).trim().split(/\s+/g);
+	const args = message.content.slice(process.env.PREFIX.length).trim().split(/\s+/g);
 	const command = args.shift().toLowerCase();
-	const isAdmin = message.member.roles.cache.has(config.admin_role);
+	const isAdmin = message.member.roles.cache.has(process.env.ADMIN_ROLE);
 
 	if (command === "help") {
-		let p = config.prefix;
+		let p = process.env.PREFIX;
 		let commands = "**Commands:**";
 		commands += `\`${p}ping\` - Pong!\n`;
 		commands += `\`${p}link\` - Instructions for how to link your Discord account to your KAG account\n`;
@@ -200,4 +200,4 @@ client.on("message", async (message) => {
 	}
 });
 
-client.login(config.token || process.env.DISCORD_TOKEN);
+client.login();
