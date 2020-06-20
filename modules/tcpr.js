@@ -85,12 +85,13 @@ exports.getAddress = () => {
 };
 
 function connectionEnded() {
+	queue.clear();
+	match.matchEnded(-1);
+	isConnected = false;
+
 	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 	channel.send("**The Gather server just went down and, as a result, the bot will no longer be accepting some Gather-related commands. The bot will automatically attempt to re-establish a connection with the server**");
 	console.log(`Lost connection with ${exports.getAddress()}`);
-
-	queue.clear();
-	isConnected = false;
 
 	setTimeout(exports.connect, process.env.TCPR_RECONNECT_INTERVAL_MS);
 }
