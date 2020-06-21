@@ -9,6 +9,7 @@ var matchIsLive = false;
 
 exports.matchStarted = () => {
 	matchIsLive = true;
+	util.updatePresence();
 	console.log("Match started");
 };
 
@@ -22,6 +23,7 @@ exports.matchEnded = (winner = -1, duration, map) => {
 
 		logMatch(winner, duration, map);
 		teams.clear();
+		util.updatePresence();
 
 		//announce winner
 		let channel = client.channels.cache.get(process.env.GATHER_GENERAL);

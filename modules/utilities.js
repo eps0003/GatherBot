@@ -1,6 +1,7 @@
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const { Discord, client } = require("../index.js");
 const queue = require("./queue.js");
+const match = require("./match.js");
 
 // exports.getRole = (role) => {
 // 	if (!role) return null;
@@ -181,7 +182,11 @@ exports.clearRole = (role) => {
 };
 
 exports.updatePresence = () => {
-	client.user.setActivity(`${queue.getPlayerCount()}/${queue.getSize()} in queue | ${process.env.PREFIX}help`, { type: "WATCHING" });
+	if (match.isInProgress()) {
+		client.user.setActivity(`a match | ${process.env.PREFIX}help`, { type: "WATCHING" });
+	} else {
+		client.user.setActivity(`${queue.getPlayerCount()}/${queue.getSize()} in queue | ${process.env.PREFIX}help`, { type: "WATCHING" });
+	}
 };
 
 exports.sanitise = (text) => {

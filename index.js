@@ -17,11 +17,11 @@ client.on("error", console.error);
 
 client.on("ready", () => {
 	console.log(`Logged into Discord as ${client.user.username}`);
-	util.updatePresence();
 
 	tcpr.connect();
 	queue.clear();
 	teams.clear();
+	util.updatePresence();
 });
 
 client.on("presenceUpdate", (oldPresence, newPresence) => {

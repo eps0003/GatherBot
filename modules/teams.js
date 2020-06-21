@@ -185,6 +185,7 @@ function syncUpdatedTeams() {
 }
 
 function syncTeams() {
+	util.updatePresence();
 	tcprTeams();
 	tcpr.socket.write(`getRules().set_bool('gather_teams_set', true);\n`);
 }
