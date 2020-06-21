@@ -17,13 +17,13 @@ exports.add = (member) => {
 				queue.push({ member, username });
 				member.roles.add(process.env.QUEUE_ROLE);
 
-				channel.send(`**${name}** has been **added** to the queue (${queue.length}/${this.getSize()})`);
+				channel.send(`**${name}** has been **added** to the queue **(${queue.length}/${this.getSize()})**`);
 				console.log(`Added ${username} (${member.user.tag}) to the queue (${queue.length}/${this.getSize()})`);
 
 				util.updatePresence();
 				this.checkQueueFull();
 			} else {
-				channel.send(`**${name}** is already in the queue (${queue.length}/${this.getSize()})`);
+				channel.send(`**${name}** is already in the queue`);
 			}
 		} else {
 			link.showLinkInstructions();
@@ -41,13 +41,13 @@ exports.remove = (member) => {
 			queue.splice(i, 1);
 			member.roles.remove(process.env.QUEUE_ROLE);
 			util.updatePresence();
-			channel.send(`**${name}** has been **removed** from the queue (${queue.length}/${this.getSize()})`);
+			channel.send(`**${name}** has been **removed** from the queue **(${queue.length}/${this.getSize()})**`);
 			console.log(`Removed ${player.username} (${member.user.tag}) from the queue (${queue.length}/${this.getSize()})`);
 			return;
 		}
 	}
 
-	channel.send(`**${name}** was already not in the queue (${queue.length}/${this.getSize()})`);
+	channel.send(`**${name}** is already not in the queue`);
 };
 
 exports.clear = () => {
