@@ -60,7 +60,7 @@ exports.splitIntoTeams = (players) => {
 };
 
 exports.scramble = () => {
-	this.splitIntoTeams(getPlayers());
+	this.splitIntoTeams(this.getPlayers());
 };
 
 exports.getPlayers = () => {
