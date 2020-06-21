@@ -3,6 +3,7 @@ require("dotenv").config();
 
 const Discord = require("discord.js");
 const client = new Discord.Client();
+exports.Discord = Discord;
 exports.client = client;
 
 const util = require("./modules/utilities.js");
@@ -94,13 +95,13 @@ client.on("message", async (message) => {
 		} else {
 			let players = queue
 				.getQueue()
-				.map((player) => player.username)
+				.map((player) => util.sanitise(player.username))
 				.join(", ");
 			message.channel.send(`**Queue:** ${players}`);
 		}
 	} else if (command === "team") {
 		if (match.isInProgress()) {
-			let name = message.member.displayName;
+			let name = util.sanitise(message.member.displayName);
 			let team = teams.getTeamNum(message.member);
 			switch (team) {
 				case 0:
@@ -119,11 +120,11 @@ client.on("message", async (message) => {
 		if (match.isInProgress()) {
 			let blueTeam = teams
 				.getBlueTeam()
-				.map((player) => player.username)
+				.map((player) => util.sanitise(player.username))
 				.join(", ");
 			let redTeam = teams
 				.getRedTeam()
-				.map((player) => player.username)
+				.map((player) => util.sanitise(player.username))
 				.join(", ");
 			message.channel.send(`**Blue Team:** ${blueTeam}\n**Red Team:** ${redTeam}`);
 		} else {
@@ -160,7 +161,8 @@ client.on("message", async (message) => {
 			if (username) {
 				queue.add(member);
 			} else {
-				message.channel.send(`**${message.member.displayName}** is yet to link their Discord account to their KAG account`);
+				let name = util.sanitise(message.member.displayName);
+				message.channel.send(`**${name}** is yet to link their Discord account to their KAG account`);
 			}
 		});
 	} else if (["forcerem", "forceremove"].includes(command)) {
@@ -242,7 +244,7 @@ client.on("message", async (message) => {
 		}
 
 		let username = args[1];
-		let name = member.displayName;
+		let name = util.sanitise(member.displayName);
 
 		if (member.user.bot) {
 			message.channel.send(`**${name}** is a bot and cannot be linked to an account`);
@@ -253,7 +255,7 @@ client.on("message", async (message) => {
 		link.getKAGUsername(member, (existingUsername) => {
 			//already linked
 			if (existingUsername) {
-				message.channel.send(`**${name}** has already linked their Discord account to **${existingUsername}**`);
+				message.channel.send(`**${name}** has already linked their Discord account to **${util.sanitise(existingUsername)}**`);
 				return;
 			}
 
@@ -261,7 +263,7 @@ client.on("message", async (message) => {
 			util.XMLHttpRequest((data) => {
 				//invalid username
 				if (!data || !data.hasOwnProperty("playerInfo")) {
-					message.channel.send(`The KAG username **${username}** does not exist`);
+					message.channel.send(`The KAG username **${util.sanitise(username)}** does not exist`);
 					return;
 				}
 
@@ -270,13 +272,13 @@ client.on("message", async (message) => {
 
 				let cachedMember = link.getCachedMember(username);
 				if (cachedMember) {
-					message.channel.send(`**${username}** is already linked to the Discord account **${cachedMember.user.tag}**`);
+					message.channel.send(`**${util.sanitise(username)}** is already linked to the Discord account **${util.sanitise(cachedMember.user.tag)}**`);
 					return;
 				}
 
 				//valid username. cache this
 				link.cache(member, username);
-				message.channel.send(`**${name}** has been temporarily linked to **${username}** for as long as the bot is online`);
+				message.channel.send(`**${name}** has been temporarily linked to **${util.sanitise(username)}** for as long as the bot is online`);
 			}, `https://api.kag2d.com/v1/player/${username}`);
 		});
 	} else if (command === "clearcache") {

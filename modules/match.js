@@ -2,6 +2,7 @@ const { client } = require("../index.js");
 const teams = require("./teams.js");
 const queue = require("./queue.js");
 const tcpr = require("./tcpr.js");
+const util = require("./utilities.js");
 var format = require("format-duration");
 
 var matchIsLive = false;
@@ -63,6 +64,6 @@ function logMatch(winner, duration, map) {
 		let durationFormatted = format(duration / 0.03);
 
 		let channel = client.channels.cache.get(process.env.MATCH_HISTORY);
-		channel.send(`**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Map: ** ${map}\n**Duration:** ${durationFormatted}\n**Winner:** ${winningTeamName}`);
+		channel.send(`**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Map: ** ${util.sanitise(map)}\n**Duration:** ${durationFormatted}\n**Winner:** ${winningTeamName}`);
 	}
 }

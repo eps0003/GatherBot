@@ -1,5 +1,5 @@
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-const { client } = require("../index.js");
+const { Discord, client } = require("../index.js");
 const queue = require("./queue.js");
 
 // exports.getRole = (role) => {
@@ -169,7 +169,7 @@ exports.XMLHttpRequest = (callback, url) => {
 			return callback(null);
 		}
 	};
-	xhttp.open("GET", url, true);
+	xhttp.open("GET", encodeURI(url), true);
 	xhttp.send();
 };
 
@@ -182,6 +182,12 @@ exports.clearRole = (role) => {
 
 exports.updatePresence = () => {
 	client.user.setActivity(`${queue.getPlayerCount()}/${queue.getSize()} in queue | ${process.env.PREFIX}help`, { type: "WATCHING" });
+};
+
+exports.sanitise = (text) => {
+	text = Discord.Util.escapeMarkdown(text);
+	text = Discord.Util.removeMentions(text);
+	return text;
 };
 
 // exports.sendMessage = (channel, text, delete_message = false) => {

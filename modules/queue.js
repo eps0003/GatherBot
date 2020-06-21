@@ -8,7 +8,7 @@ var queue = [];
 var size = process.env.QUEUE_SIZE;
 
 exports.add = (member) => {
-	let name = member.displayName;
+	let name = util.sanitise(member.displayName);
 	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 
 	link.getKAGUsername(member, (username) => {
@@ -32,7 +32,7 @@ exports.add = (member) => {
 };
 
 exports.remove = (member) => {
-	let name = member.displayName;
+	let name = util.sanitise(member.displayName);
 	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 
 	for (let i in queue) {

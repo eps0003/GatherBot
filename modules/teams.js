@@ -112,13 +112,16 @@ exports.getTeam = (team) => {
 exports.swapPlayer = (currentMember, newMember) => {
 	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 
+	let currentName = util.sanitise(currentMember.displayName);
+	let newName = util.sanitise(newMember.displayName);
+
 	if (!match.isParticipating(currentMember)) {
-		channel.send(`**${currentMember.displayName}** is not participating in a match`);
+		channel.send(`**${currentName}** is not participating in a match`);
 		return;
 	}
 
 	if (match.isParticipating(newMember)) {
-		channel.send(`**${newMember.displayName}** is already participating in a match`);
+		channel.send(`**${newName}** is already participating in a match`);
 		return;
 	}
 
@@ -147,13 +150,13 @@ exports.swapPlayer = (currentMember, newMember) => {
 			syncUpdatedTeams();
 
 			//announce sub
-			channel.send(`**${newMember.displayName}** has subbed in for **${currentMember.displayName}** on **${teamName}**`);
+			channel.send(`**${newName}** has subbed in for **${currentName}** on **${teamName}**`);
 			console.log(`${currentMember.user.tag}** subbed in for **${currentMember.user.tag} on ${teamName}`);
 
 			//dm user
 			currentMember.send("You have been **subbed out** of your Gather match");
 		} else {
-			channel.send(`**${newMember.displayName}** is yet to link their Discord account to their KAG account`);
+			channel.send(`**${newName}** is yet to link their Discord account to their KAG account`);
 		}
 	});
 };
