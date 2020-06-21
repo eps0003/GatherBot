@@ -226,7 +226,7 @@ client.on("message", async (message) => {
 
 		let member = message.mentions.members.first();
 		let username = args[1];
-		let name = message.member.displayName;
+		let name = member.displayName;
 
 		if (member.user.bot) {
 			message.channel.send(`**${name}** is a bot and cannot be linked to an account`);
