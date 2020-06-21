@@ -23,6 +23,15 @@ client.on("ready", () => {
 	teams.clear();
 });
 
+client.on("presenceUpdate", (oldPresence, newPresence) => {
+	if (["idle", "offline"].includes(newPresence.status)) {
+		if (queue.has(newPresence.member)) {
+			queue.remove(newPresence.member);
+			newPresence.member.send(`You have been **removed** from the Gather queue because you went **${newPresence.status}** on Discord`);
+		}
+	}
+});
+
 client.on("message", async (message) => {
 	let wrongGuild = message.guild && message.guild.id !== process.env.GUILD;
 	let botMessage = message.author.bot;
@@ -67,8 +76,11 @@ client.on("message", async (message) => {
 		message.channel.send("The bot is unable to connect to the Gather server right now. Please try again later");
 		//commands after this require the gather server to be online
 	} else if (command === "add") {
+		let status = message.member.presence.status;
 		if (match.isParticipating(message.member)) {
 			message.channel.send("You cannot add to the queue while participating in a match");
+		} else if (["idle", "offline"].includes(status)) {
+			message.channel.send(`You cannot add to the queue while you are ${status} on Discord`);
 		} else {
 			queue.add(message.member);
 		}
