@@ -53,8 +53,9 @@ client.on("message", async (message) => {
 		commands += `\`${p}link\` - Instructions for how to link your Discord account to your KAG account\n`;
 		commands += `\`${p}add\` - Add yourself to the queue\n`;
 		commands += `\`${p}remove/rem\` - Remove yourself from the queue\n`;
+		commands += `\`${p}queue/list\` - Lists the players in the queue\n`;
 		commands += `\`${p}team\` - States which team you are in\n`;
-		commands += `\`${p}teams\` - States the players in each team\n`;
+		commands += `\`${p}teams\` - Lists the players in each team\n`;
 		commands += `\`${p}status/tickets\` - Provides information about the current match\n`;
 		commands += `**Admin Commands:**\n`;
 		commands += `\`${p}forceadd [Discord user]\` - Force adds a user to the queue\n`;
@@ -89,7 +90,7 @@ client.on("message", async (message) => {
 		}
 	} else if (["rem", "remove"].includes(command)) {
 		queue.remove(message.member);
-	} else if (command === "queue") {
+	} else if (["queue", "list"].includes(command)) {
 		if (queue.isEmpty()) {
 			message.channel.send("The queue is empty");
 		} else {
