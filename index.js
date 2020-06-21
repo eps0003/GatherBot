@@ -149,6 +149,10 @@ client.on("message", async (message) => {
 		}
 
 		let member = message.mentions.members.first();
+		if (!member) {
+			message.channel.send(`The specified user is not a member of this Discord server`);
+			return;
+		}
 
 		link.getKAGUsername(member, (username) => {
 			if (username) {
@@ -169,6 +173,11 @@ client.on("message", async (message) => {
 		}
 
 		let member = message.mentions.members.first();
+		if (!member) {
+			message.channel.send(`The specified user is not a member of this Discord server`);
+			return;
+		}
+
 		queue.remove(member);
 	} else if (["setqueue", "queuesize"].includes(command)) {
 		if (!isAdmin) {
@@ -225,6 +234,11 @@ client.on("message", async (message) => {
 		}
 
 		let member = message.mentions.members.first();
+		if (!member) {
+			message.channel.send(`The specified user is not a member of this Discord server`);
+			return;
+		}
+
 		let username = args[1];
 		let name = member.displayName;
 
