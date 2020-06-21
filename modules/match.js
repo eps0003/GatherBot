@@ -26,9 +26,9 @@ exports.matchEnded = (winner = -1, duration, map) => {
 		let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 
 		if (winner == 0 || winner == 1) {
-			var teamNames = ["Blue Team", "Red Team"];
-			channel.send(`**Match ended. ${teamNames[winner]} won!**`);
-			console.log(`Match ended. ${teamNames[winner]} won!`);
+			var teamName = teams.getTeamName(winner);
+			channel.send(`**Match ended. ${teamName} won!**`);
+			console.log(`Match ended. ${teamName} won!`);
 		} else {
 			channel.send("**Match ended prematurely**");
 			console.log("Match ended prematurely");
@@ -44,7 +44,7 @@ exports.isInProgress = () => {
 };
 
 exports.isParticipating = (member) => {
-	return teams.getTeam(member) > -1;
+	return teams.getTeamNum(member) > -1;
 };
 
 exports.isLive = () => {
@@ -59,10 +59,10 @@ function logMatch(winner, duration, map) {
 		let blueTeamMentions = blueTeam.map((player) => player.member.toString()).join(" ");
 		let redTeamMentions = redTeam.map((player) => player.member.toString()).join(" ");
 
-		let winningTeam = ["Blue Team", "Red Team"][winner];
+		let winningTeamName = teams.getTeamName(winner);
 		let durationFormatted = format(duration / 0.03);
 
 		let channel = client.channels.cache.get(process.env.MATCH_HISTORY);
-		channel.send(`**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Map: ** ${map}\n**Duration:** ${durationFormatted}\n**Winner:** ${winningTeam}`);
+		channel.send(`**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Map: ** ${map}\n**Duration:** ${durationFormatted}\n**Winner:** ${winningTeamName}`);
 	}
 }

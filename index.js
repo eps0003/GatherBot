@@ -99,7 +99,7 @@ client.on("message", async (message) => {
 	} else if (command === "team") {
 		if (match.isInProgress()) {
 			let name = message.member.displayName;
-			let team = teams.getTeam(message.member);
+			let team = teams.getTeamNum(message.member);
 			switch (team) {
 				case 0:
 					message.channel.send(`**${name}** is on **Blue Team**`);
@@ -285,6 +285,31 @@ client.on("message", async (message) => {
 
 		link.clearCache();
 		message.channel.send("The account link cache has been cleared");
+	} else if (["swap", "sub"].includes(command)) {
+		if (!isAdmin) {
+			message.channel.send("Only an admin can use this command");
+			return;
+		}
+
+		if (!match.isInProgress()) {
+			message.channel.send("There is no match in progress");
+			return;
+		}
+
+		if (args.length !== 2 || !args[0].match(Discord.MessageMentions.USERS_PATTERN) || !args[1].match(Discord.MessageMentions.USERS_PATTERN)) {
+			message.channel.send(`Invalid command usage: \`${process.env.PREFIX}${command} [Current user] [New user]\``);
+			return;
+		}
+
+		let members = message.mentions.members.first(2);
+		let member1 = members[0];
+		let member2 = members[1];
+		if (!member1 || !member2) {
+			message.channel.send(`A specified user is not a member of this Discord server`);
+			return;
+		}
+
+		teams.swapPlayer(member1, member2);
 	}
 });
 
