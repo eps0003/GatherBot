@@ -140,6 +140,10 @@ exports.swapPlayer = (currentMember, newMember) => {
 				}
 			}
 
+			//remove team role
+			let roles = [process.env.BLUE_TEAM_ROLE, process.env.RED_TEAM_ROLE];
+			currentMember.roles.remove(roles[team]);
+
 			//remove from queue
 			if (queue.has(newMember)) {
 				queue.remove(newMember);
