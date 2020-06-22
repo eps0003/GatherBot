@@ -71,8 +71,6 @@ client.on("message", async (message) => {
 	} else if (command === "ping") {
 		message.channel.send("Pong!");
 	} else if (wrongChannel) {
-		let channel = client.guilds.cache.get(process.env.GUILD).channels.cache.get(process.env.GATHER_GENERAL);
-		message.channel.send(`Please send Gather-related commands in ${channel.toString()}`);
 		//commands after this need to be sent in gather general
 	} else if (command === "link") {
 		link.showLinkInstructions();
