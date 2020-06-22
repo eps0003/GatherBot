@@ -93,6 +93,19 @@ exports.splitIntoTeams = (players) => {
 
 exports.scramble = () => {
 	this.splitIntoTeams(this.getPlayers());
+
+	let blueTeam = this.getBlueTeam();
+	let redTeam = this.getRedTeam();
+
+	let blueTeamUsernames = blueTeam.map((player) => util.sanitise(player.username)).join(", ");
+	let redTeamUsernames = redTeam.map((player) => util.sanitise(player.username)).join(", ");
+
+	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+	channel.send(`**The teams have been scrambled**\n**Blue Team:** ${blueTeamUsernames}\n**Red Team:** ${redTeamUsernames}`);
+
+	console.log("Teams scrambled");
+	console.log(`Blue Team: ${blueTeam.map((player) => player.username).join(", ")}`);
+	console.log(`Red Team: ${redTeam.map((player) => player.username).join(", ")}`);
 };
 
 exports.getPlayers = () => {
@@ -174,8 +187,10 @@ exports.announceTeams = () => {
 
 	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 	channel.send(`**A Gather match is about to start!**\n**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`);
-	console.log(`Blue Team: ${blueTeam.map((player) => player.username).join(" ")}`);
-	console.log(`Red Team: ${redTeam.map((player) => player.username).join(" ")}`);
+
+	console.log("Teams set");
+	console.log(`Blue Team: ${blueTeam.map((player) => player.username).join(", ")}`);
+	console.log(`Red Team: ${redTeam.map((player) => player.username).join(", ")}`);
 
 	let players = this.getPlayers();
 	for (let player of players) {
