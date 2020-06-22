@@ -46,7 +46,7 @@ client.on("message", async (message) => {
 	const command = args.shift().toLowerCase();
 	const isAdmin = message.member.roles.cache.has(process.env.ADMIN_ROLE);
 
-	if (command === "help") {
+	if (["help", "commands"].includes(command)) {
 		let p = process.env.PREFIX;
 		let commands = "**Commands:**\n";
 		commands += `\`${p}ping\` - Pong!\n`;
