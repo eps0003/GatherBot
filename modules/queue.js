@@ -31,7 +31,7 @@ exports.add = (member) => {
 	});
 };
 
-exports.remove = (member) => {
+exports.remove = (member, reason = "") => {
 	let name = util.sanitise(member.displayName);
 	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 
@@ -41,7 +41,7 @@ exports.remove = (member) => {
 			queue.splice(i, 1);
 			member.roles.remove(process.env.QUEUE_ROLE);
 			util.updatePresence();
-			channel.send(`**${name}** has been **removed** from the queue **(${queue.length}/${this.getSize()})**`);
+			channel.send(`**${name}** has been **removed** from the queue${reason} **(${queue.length}/${this.getSize()})**`);
 			console.log(`Removed ${player.username} (${member.user.tag}) from the queue (${queue.length}/${this.getSize()})`);
 			return;
 		}

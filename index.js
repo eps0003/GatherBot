@@ -27,7 +27,7 @@ client.on("ready", () => {
 client.on("presenceUpdate", (oldPresence, newPresence) => {
 	if (["idle", "offline"].includes(newPresence.status)) {
 		if (queue.has(newPresence.member)) {
-			queue.remove(newPresence.member);
+			queue.remove(newPresence.member, ` because they went **${newPresence.status}** on Discord`);
 			newPresence.member.send(`You have been **removed** from the Gather queue because you went **${newPresence.status}** on Discord`);
 		}
 	}
