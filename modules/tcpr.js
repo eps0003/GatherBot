@@ -62,10 +62,14 @@ exports.connect = () => {
 		if (command === "started") {
 			match.matchStarted();
 		} else if (command === "ended") {
-			var winner = Number(args[0]);
-			var duration = Number(args[1]);
-			var map = args[2];
-			match.matchEnded(winner, duration, map);
+			var cause = Number(args[0]);
+			var winner = Number(args[1]);
+			var duration = Number(args[2]);
+			var map = args[3];
+			var blueTickets = Number(args[4]);
+			var redTickets = Number(args[5]);
+
+			match.matchEnded(cause, winner, duration, map, blueTickets, redTickets);
 		} else if (command === "scramble") {
 			teams.scramble();
 		} else if (command === "status") {
@@ -90,7 +94,7 @@ function connectionEnded() {
 	isConnected = false;
 
 	//end match
-	match.matchEnded();
+	match.matchEnded(match.matchEndCause.disconnected);
 
 	//announce server went down
 	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
