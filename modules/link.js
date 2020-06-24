@@ -72,5 +72,5 @@ exports.getDiscordID = (username, callback) => {
 
 exports.showLinkInstructions = () => {
 	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
-	channel.send("To link your Discord account to your KAG account, go to https://kag2d.com/en/discord and follow the instructions");
+	channel.send(`To link your Discord account to your KAG account, go to **https://kag2d.com/en/discord** and follow the instructions. Keep in mind it **may take a few minutes to update** before you are able to ${process.env.PREFIX}add to the queue`);
 };
