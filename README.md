@@ -1,7 +1,7 @@
-<img src="icon.jpg" align="left" height="58" />
+<img src="icon.jpg" align="left" height="74" />
 
 # KAG Gather
-Gather is an organised CTF event involving the use of this Discord bot to organise matches. Gather provides more organised, team-based gameplay as compared to regular CTF due to its inclusion of tickets (limited number of respawns per team). Gather is best enjoyed with teams of five and everyone in a single voice channel.
+Gather is an CTF event involving the use of this Discord bot to organise matches. Gather provides more structured, team-based gameplay as compared to regular CTF due to its inclusion of tickets (limited number of respawns per team). Gather is best enjoyed with teams of five and everyone in a single voice channel.
 
 ## Features
 - Adjustable queue size
