@@ -158,7 +158,7 @@ client.on("message", async (message) => {
 
 		link.getKAGUsername(member, (username) => {
 			if (username) {
-				queue.add(member);
+				queue.add(member, " **by an admin**");
 			} else {
 				let name = util.sanitise(message.member.displayName);
 				message.channel.send(`**${name}** is yet to link their Discord account to their KAG account`);
@@ -181,7 +181,11 @@ client.on("message", async (message) => {
 			return;
 		}
 
-		queue.remove(member);
+		if (queue.has(member)) {
+			member.send("You have been **removed** from the Gather queue **by an admin**");
+		}
+
+		queue.remove(member, " **by an admin**");
 	} else if (["setqueue", "queuesize"].includes(command)) {
 		if (!isAdmin) {
 			message.channel.send("Only an admin can use this command");

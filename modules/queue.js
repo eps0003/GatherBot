@@ -7,7 +7,7 @@ const util = require("./utilities.js");
 var queue = [];
 var size = process.env.QUEUE_SIZE;
 
-exports.add = (member) => {
+exports.add = (member, reason = "") => {
 	let name = util.sanitise(member.displayName);
 	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 
@@ -17,7 +17,7 @@ exports.add = (member) => {
 				queue.push({ member, username });
 				member.roles.add(process.env.QUEUE_ROLE);
 
-				channel.send(`**${name}** has been **added** to the queue **(${queue.length}/${this.getSize()})**`);
+				channel.send(`**${name}** has been **added** to the queue${reason} **(${queue.length}/${this.getSize()})**`);
 				console.log(`Added ${username} (${member.user.tag}) to the queue (${queue.length}/${this.getSize()})`);
 
 				util.updatePresence();
