@@ -65,7 +65,8 @@ client.on("message", async (message) => {
 		commands += `\`${p}endmatch/end\` - Ends the current match\n`;
 		commands += `\`${p}templink [Discord user] [KAG username]\` - Temporarily links a Discord account to a KAG account\n`;
 		commands += `\`${p}clearcache\` - Clears the cache of linked accounts\n`;
-		commands += `\`${p}sub/swap [Current user] [New user]\` - Subs a non-participating user in place of a participating user`;
+		commands += `\`${p}sub/swap [Current user] [New user]\` - Subs a non-participating user in place of a participating user\n`;
+		commands += `\`${p}islinked [Discord user/KAG username]\` - Checks whether a Discord user or KAG username is linked to an account`;
 		message.member.send(commands);
 		message.channel.send("Help has been sent to you through DMs");
 	} else if (command === "ping") {
@@ -74,6 +75,115 @@ client.on("message", async (message) => {
 		//commands after this need to be sent in gather general
 	} else if (command === "link") {
 		link.showLinkInstructions();
+	} else if (command === "templink") {
+		if (!isAdmin) {
+			message.channel.send("Only an admin can use this command");
+			return;
+		}
+
+		if (args.length !== 2 || !args[0].match(Discord.MessageMentions.USERS_PATTERN)) {
+			message.channel.send(`Invalid command usage: \`${process.env.PREFIX}${command} [Discord user] [KAG username]\``);
+			return;
+		}
+
+		let member = message.mentions.members.first();
+		if (!member) {
+			message.channel.send(`The specified user is not a member of this Discord server`);
+			return;
+		}
+
+		let username = args[1];
+		let name = util.sanitise(member.displayName);
+
+		if (member.user.bot) {
+			message.channel.send(`**${name}** is a bot and cannot be linked to an account`);
+			return;
+		}
+
+		//check if already linked
+		link.getKAGUsername(member, (existingUsername) => {
+			//already linked
+			if (existingUsername) {
+				message.channel.send(`**${name}** has already linked their Discord account to **${util.sanitise(existingUsername)}**`);
+				return;
+			}
+
+			//check if valid username
+			util.XMLHttpRequest((data) => {
+				//invalid username
+				if (!data || !data.hasOwnProperty("playerInfo")) {
+					message.channel.send(`The KAG username **${util.sanitise(username)}** does not exist`);
+					return;
+				}
+
+				//update username with correct capitalisation
+				username = data.playerInfo.username;
+
+				let cachedMember = link.getCachedMember(username);
+				if (cachedMember) {
+					message.channel.send(`**${util.sanitise(username)}** is already linked to the Discord account **${util.sanitise(cachedMember.user.tag)}**`);
+					return;
+				}
+
+				//valid username. cache this
+				link.cache(member, username);
+				message.channel.send(`**${name}** has been temporarily linked to **${util.sanitise(username)}** for as long as the bot is online`);
+			}, `https://api.kag2d.com/v1/player/${username}`);
+		});
+	} else if (command === "clearcache") {
+		if (!isAdmin) {
+			message.channel.send("Only an admin can use this command");
+			return;
+		}
+
+		link.clearCache();
+		message.channel.send("The account link cache has been cleared");
+	} else if (["islinked", "checklink"].includes(command)) {
+		if (!isAdmin) {
+			message.channel.send("Only an admin can use this command");
+			return;
+		}
+
+		if (args.length !== 1) {
+			message.channel.send(`Invalid command usage: \`${process.env.PREFIX}${command} [Discord user/KAG username]\``);
+			return;
+		}
+
+		if (args[0].match(Discord.MessageMentions.USERS_PATTERN)) {
+			//discord user mentioned
+
+			let member = message.mentions.members.first();
+			if (!member) {
+				message.channel.send(`The specified user is not a member of this Discord server`);
+				return;
+			}
+
+			let name = util.sanitise(member.displayName);
+
+			if (member.user.bot) {
+				message.channel.send(`**${name}** is a bot and cannot be linked to an account`);
+				return;
+			}
+
+			link.getKAGUsername(member, (username) => {
+				if (username) {
+					message.channel.send(`**${util.sanitise(name)}** is linked to **${util.sanitise(username)}**`);
+				} else {
+					message.channel.send(`**${util.sanitise(name)}** is not linked to a KAG account`);
+				}
+			});
+		} else {
+			//kag username specified
+
+			let username = args[0];
+			link.getDiscordID(username, (username, id) => {
+				if (id) {
+					message.channel.send(`**${util.sanitise(username)}** is linked to **<@${id}>**`);
+				} else {
+					message.channel.send(`**${util.sanitise(username)}** is not linked to a Discord account`);
+				}
+			});
+		}
 	} else if (!tcpr.isConnected()) {
 		message.channel.send("The bot is unable to connect to the Gather server right now. Please try again later");
 		//commands after this require the gather server to be online
@@ -229,69 +339,6 @@ client.on("message", async (message) => {
 		} else {
 			message.channel.send("There is no match in progress");
 		}
-	} else if (command === "templink") {
-		if (!isAdmin) {
-			message.channel.send("Only an admin can use this command");
-			return;
-		}
-
-		if (args.length !== 2 || !args[0].match(Discord.MessageMentions.USERS_PATTERN)) {
-			message.channel.send(`Invalid command usage: \`${process.env.PREFIX}${command} [Discord user] [KAG username]\``);
-			return;
-		}
-
-		let member = message.mentions.members.first();
-		if (!member) {
-			message.channel.send(`The specified user is not a member of this Discord server`);
-			return;
-		}
-
-		let username = args[1];
-		let name = util.sanitise(member.displayName);
-
-		if (member.user.bot) {
-			message.channel.send(`**${name}** is a bot and cannot be linked to an account`);
-			return;
-		}
-
-		//check if already linked
-		link.getKAGUsername(member, (existingUsername) => {
-			//already linked
-			if (existingUsername) {
-				message.channel.send(`**${name}** has already linked their Discord account to **${util.sanitise(existingUsername)}**`);
-				return;
-			}
-
-			//check if valid username
-			util.XMLHttpRequest((data) => {
-				//invalid username
-				if (!data || !data.hasOwnProperty("playerInfo")) {
-					message.channel.send(`The KAG username **${util.sanitise(username)}** does not exist`);
-					return;
-				}
-
-				//update username with correct capitalisation
-				username = data.playerInfo.username;
-
-				let cachedMember = link.getCachedMember(username);
-				if (cachedMember) {
-					message.channel.send(`**${util.sanitise(username)}** is already linked to the Discord account **${util.sanitise(cachedMember.user.tag)}**`);
-					return;
-				}
-
-				//valid username. cache this
-				link.cache(member, username);
-				message.channel.send(`**${name}** has been temporarily linked to **${util.sanitise(username)}** for as long as the bot is online`);
-			}, `https://api.kag2d.com/v1/player/${username}`);
-		});
-	} else if (command === "clearcache") {
-		if (!isAdmin) {
-			message.channel.send("Only an admin can use this command");
-			return;
-		}
-
-		link.clearCache();
-		message.channel.send("The account link cache has been cleared");
 	} else if (["swap", "sub"].includes(command)) {
 		if (!isAdmin) {
 			message.channel.send("Only an admin can use this command");

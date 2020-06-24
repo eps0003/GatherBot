@@ -13,14 +13,14 @@ exports.getKAGUsername = (member, callback) => {
 	//get username from api
 	util.XMLHttpRequest((data) => {
 		if (data && data.playerList.length > 0) {
-			//store username in cache
+			//store in cache
 			let username = data.playerList[0].username;
 			this.cache(member, username);
 
 			//found username
 			callback(username);
 		} else {
-			//discord not linked to kag account
+			//discord not linked to kag account or account doesnt exist
 			callback("");
 		}
 	}, `https://api.kag2d.com/v1/players?filters=[{"field":"discord","op":"eq","value":"${member.id}"}]`);
@@ -45,6 +45,29 @@ exports.getCachedMember = (username) => {
 		return client.guilds.cache.get(process.env.GUILD).members.cache.get(id);
 	}
 	return null;
+};
+
+exports.getDiscordID = (username, callback) => {
+	//get cached member
+	let cachedMemeber = this.getCachedMember(username);
+	if (cachedMemeber) {
+		let id = cachedMemeber.id;
+		let username = usernames[id];
+		callback(username, id);
+		return;
+	}
+
+	util.XMLHttpRequest((data) => {
+		if (data && data.hasOwnProperty("playerInfo")) {
+			//found discord id
+			username = data.playerInfo.username;
+			let id = data.playerExtra.discord_user_id;
+			callback(username, id);
+		} else {
+			//discord not linked to kag account or account doesnt exist
+			callback("", 0);
+		}
+	}, `https://api.kag2d.com/v1/player/${username}`);
 };
 
 exports.showLinkInstructions = () => {
