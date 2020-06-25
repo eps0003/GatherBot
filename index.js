@@ -25,10 +25,11 @@ client.on("ready", () => {
 });
 
 client.on("presenceUpdate", (oldPresence, newPresence) => {
-	if (["idle", "offline"].includes(newPresence.status)) {
+	if (["idle", "offline", "dnd"].includes(newPresence.status)) {
 		if (queue.has(newPresence.member)) {
-			queue.remove(newPresence.member, ` because they went **${newPresence.status}** on Discord`);
-			newPresence.member.send(`You have been **removed** from the Gather queue because you went **${newPresence.status}** on Discord`);
+			let statusName = util.statusNames[newPresence.status];
+			queue.remove(newPresence.member, ` because they went **${statusName}** on Discord`);
+			newPresence.member.send(`You have been **removed** from the Gather queue because you went **${statusName}** on Discord`);
 		}
 	}
 });
@@ -181,8 +182,9 @@ client.on("message", async (message) => {
 		let status = message.member.presence.status;
 		if (match.isParticipating(message.member)) {
 			message.channel.send("You **cannot add** to the queue while **participating** in a match");
-		} else if (["idle", "offline"].includes(status)) {
-			message.channel.send(`You **cannot add** to the queue while you are **${status}** on Discord`);
+		} else if (["idle", "offline", "dnd"].includes(status)) {
+			let statusName = util.statusNames[status];
+			message.channel.send(`You **cannot add** to the queue while you are **${statusName}** on Discord`);
 		} else {
 			queue.add(message.member);
 		}

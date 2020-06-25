@@ -3,6 +3,13 @@ const { Discord, client } = require("../index.js");
 const queue = require("./queue.js");
 const match = require("./match.js");
 
+exports.statusNames = Object.freeze({
+	online: "online",
+	idle: "idle",
+	dnd: "do not disturb",
+	offline: "offline",
+});
+
 // exports.getRole = (role) => {
 // 	if (!role) return null;
 // 	if (typeof role === "object") return role;
