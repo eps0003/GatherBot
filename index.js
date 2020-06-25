@@ -190,9 +190,9 @@ client.on("message", async (message) => {
 	} else if (command === "add") {
 		let status = message.member.presence.status;
 		if (match.isParticipating(message.member)) {
-			message.channel.send("You cannot add to the queue while participating in a match");
+			message.channel.send("You **cannot add** to the queue while **participating** in a match");
 		} else if (["idle", "offline"].includes(status)) {
-			message.channel.send(`You cannot add to the queue while you are ${status} on Discord`);
+			message.channel.send(`You **cannot add** to the queue while you are **${status}** on Discord`);
 		} else {
 			queue.add(message.member);
 		}
@@ -200,7 +200,7 @@ client.on("message", async (message) => {
 		queue.remove(message.member);
 	} else if (["queue", "list"].includes(command)) {
 		if (queue.isEmpty()) {
-			message.channel.send("The queue is empty");
+			message.channel.send("The queue is **empty**");
 		} else {
 			let players = queue
 				.getQueue()
