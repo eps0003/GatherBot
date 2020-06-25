@@ -64,8 +64,8 @@ exports.getDiscordID = (username, callback) => {
 			let id = data.playerExtra.discord_user_id;
 			callback(username, id);
 		} else {
-			//discord not linked to kag account or account doesnt exist
-			callback("", 0);
+			//kag account doesnt exist
+			callback("", "0");
 		}
 	}, `https://api.kag2d.com/v1/player/${username}`);
 };

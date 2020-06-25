@@ -176,11 +176,16 @@ client.on("message", async (message) => {
 			//kag username specified
 
 			let username = args[0];
-			link.getDiscordID(username, (username, id) => {
-				if (id) {
-					message.channel.send(`**${util.sanitise(username)}** is linked to **<@${id}>**`);
+			link.getDiscordID(username, (correctUsername, id) => {
+				if (!correctUsername) {
+					message.channel.send(`**${util.sanitise(username)}** is not a valid KAG username`);
+					return;
+				}
+
+				if (id != 0) {
+					message.channel.send(`**${util.sanitise(correctUsername)}** is linked to **<@${id}>**`);
 				} else {
-					message.channel.send(`**${util.sanitise(username)}** is not linked to a Discord account`);
+					message.channel.send(`**${util.sanitise(correctUsername)}** is not linked to a Discord account`);
 				}
 			});
 		}
