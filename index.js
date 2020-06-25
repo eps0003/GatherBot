@@ -49,7 +49,6 @@ client.on("message", async (message) => {
 	if (["help", "commands"].includes(command)) {
 		let p = process.env.PREFIX;
 		let commands = "**Commands:**\n";
-		commands += `\`${p}ping\` - Pong!\n`;
 		commands += `\`${p}link\` - Instructions for how to link your Discord account to your KAG account\n`;
 		commands += `\`${p}add\` - Add yourself to the queue\n`;
 		commands += `\`${p}remove/rem\` - Remove yourself from the queue\n`;
@@ -58,6 +57,7 @@ client.on("message", async (message) => {
 		commands += `\`${p}teams\` - Lists the players in each team\n`;
 		commands += `\`${p}status/tickets\` - Provides information about the current match\n`;
 		commands += `**Admin Commands:**\n`;
+		commands += `\`${p}ping\` - Checks if the bot is alive\n`;
 		commands += `\`${p}forceadd [Discord user]\` - Force adds a user to the queue\n`;
 		commands += `\`${p}forceremove/forcerem [Discord user]\` - Force remove a user from the queue\n`;
 		commands += `\`${p}setqueue/queuesize [size]\` - Sets the number of players required to begin a match\n`;
@@ -69,7 +69,7 @@ client.on("message", async (message) => {
 		commands += `\`${p}islinked [Discord user/KAG username]\` - Checks whether a Discord user or KAG username is linked to an account`;
 		message.member.send(commands);
 		message.channel.send("Help has been sent to you through DMs");
-	} else if (command === "ping") {
+	} else if (command === "ping" && isAdmin) {
 		message.channel.send("Pong!");
 	} else if (wrongChannel) {
 		//commands after this need to be sent in gather general
