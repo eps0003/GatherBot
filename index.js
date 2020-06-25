@@ -100,36 +100,21 @@ client.on("message", async (message) => {
 			return;
 		}
 
-		//check if already linked
-		link.getKAGUsername(member, (existingUsername) => {
-			//already linked
-			if (existingUsername) {
-				message.channel.send(`**${name}** has already linked their Discord account to **${util.sanitise(existingUsername)}**`);
+		//check if valid username
+		util.XMLHttpRequest((data) => {
+			//invalid username
+			if (!data || !data.hasOwnProperty("playerInfo")) {
+				message.channel.send(`The KAG username **${util.sanitise(username)}** does not exist`);
 				return;
 			}
 
-			//check if valid username
-			util.XMLHttpRequest((data) => {
-				//invalid username
-				if (!data || !data.hasOwnProperty("playerInfo")) {
-					message.channel.send(`The KAG username **${util.sanitise(username)}** does not exist`);
-					return;
-				}
+			//update username with correct capitalisation
+			username = data.playerInfo.username;
 
-				//update username with correct capitalisation
-				username = data.playerInfo.username;
-
-				let cachedMember = link.getCachedMember(username);
-				if (cachedMember) {
-					message.channel.send(`**${util.sanitise(username)}** is already linked to the Discord account **${util.sanitise(cachedMember.user.tag)}**`);
-					return;
-				}
-
-				//valid username. cache this
-				link.cache(member, username);
-				message.channel.send(`**${name}** has been temporarily linked to **${util.sanitise(username)}** for as long as the bot is online`);
-			}, `https://api.kag2d.com/v1/player/${username}`);
-		});
+			//valid username. cache this
+			link.cache(member, username);
+			message.channel.send(`**${name}** has been temporarily linked to **${util.sanitise(username)}** for as long as the bot is online`);
+		}, `https://api.kag2d.com/v1/player/${username}`);
 	} else if (command === "clearcache") {
 		if (!isAdmin) {
 			message.channel.send("Only an admin can use this command");
