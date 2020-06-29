@@ -153,9 +153,9 @@ client.on("message", async (message) => {
 
 			link.getKAGUsername(member, (username) => {
 				if (username) {
-					message.channel.send(`**${util.sanitise(name)}** is linked to **${util.sanitise(username)}**`);
+					message.channel.send(`**${name}** is linked to **${util.sanitise(username)}**`);
 				} else {
-					message.channel.send(`**${util.sanitise(name)}** is not linked to a KAG account`);
+					message.channel.send(`**${name}** is not linked to a KAG account`);
 				}
 			});
 		} else {
