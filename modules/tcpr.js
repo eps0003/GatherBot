@@ -3,6 +3,7 @@ const { client } = require("../index.js");
 const queue = require("./queue.js");
 const match = require("./match.js");
 const teams = require("./teams.js");
+const util = require("./utilities.js");
 
 var isConnected = false;
 var sentWarning = false;
@@ -62,22 +63,27 @@ exports.connect = () => {
 		if (command === "started") {
 			match.matchStarted();
 		} else if (command === "ended") {
-			var cause = Number(args[0]);
-			var winner = Number(args[1]);
-			var duration = Number(args[2]);
-			var map = args[3];
-			var blueTickets = Number(args[4]);
-			var redTickets = Number(args[5]);
+			let cause = Number(args[0]);
+			let winner = Number(args[1]);
+			let duration = Number(args[2]);
+			let map = args[3];
+			let blueTickets = Number(args[4]);
+			let redTickets = Number(args[5]);
 
 			match.matchEnded(cause, winner, duration, map, blueTickets, redTickets);
 		} else if (command === "scramble") {
 			teams.scramble();
 		} else if (command === "status") {
-			var blueTickets = Number(args[0]);
-			var redTickets = Number(args[1]);
+			let state = Number(args[0]);
+			let blueTickets = Number(args[1]);
+			let redTickets = Number(args[2]);
+			let blueAlive = Number(args[3]);
+			let redAlive = Number(args[4]);
+
+			let stateNames = ["Intermission", "Warmup", "In Progress", "Game Over"];
 
 			let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
-			channel.send(`**Blue Tickets:** ${blueTickets}\n**Red Tickets:** ${redTickets}`);
+			channel.send(`**State:** ${stateNames[state]}\n**Blue Team:** ${blueTickets} ${util.plural(blueTickets, "ticket")}, ${blueAlive} alive\n**Red Team:** ${redTickets} ${util.plural(redTickets, "ticket")}, ${redAlive} alive`);
 		}
 	});
 };
