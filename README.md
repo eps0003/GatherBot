@@ -6,7 +6,6 @@ Gather is an CTF event involving the use of this Discord bot to organise matches
 ## Features
 - Adjustable queue size
 - Automatic team allocation
-- Random map generation based on various presets
 - Tickets
 - Match history log
 
@@ -59,6 +58,17 @@ Gather is an CTF event involving the use of this Discord bot to organise matches
    The bot has successfully established a connection with the Gather server and is ready for use
    ```
 Gather is now ready to go!
+
+## Customisation
+- Add a custom mapcycle
+- Tweak the mod properties in `GatherLite/gather.cfg`
+- Tweak the balance of CTF (you will need modding experience to do this)   
+  Some suggestions include:
+   - Adjust the costs of shop items
+   - Adjust the coin rewards for building, dealing damage, destroying siege, etc.
+   - Doors stay open for longer to disincentivise fighting through team doors
+   - Water bombs/arrows stun all players to reduce the effectiveness of water spam
+   - Increase the spread of fire to reduce the effectiveness of temporary wooden structures
 
 ## Acknowledgements
 Thanks to the following people for helping Gather reach the stage it's currently in:
