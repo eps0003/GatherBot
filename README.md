@@ -47,7 +47,7 @@ Gather is an CTF event involving the use of this Discord bot to organise matches
 2. Add the bot to your Discord server. I recommend using [this](https://discordapi.com/permissions.html#8) site to do so
 3. Make a copy of `example.env`, name it `.env`, and fill in all fields  
    **Note:** There should be no space between `=` and the value of each field (e.g. `PREFIX=!`)
-4. Run the bot by typing `npm start` in the base directory  
+4. Run the bot by typing `npm start` in the base directory or by running `keepalive.sh`  
    The console output should be similar to the following:  
    ```
    Logged into Discord as Gather
