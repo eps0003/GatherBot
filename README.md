@@ -34,6 +34,7 @@ Gather is an CTF event involving the use of this Discord bot to organise matches
 2. Add `GatherLite` to a new line of `mods.cfg`
 3. Ensure the following settings are applied to `autoconfig.cfg`:
    - `sv_gamemode = CTF`
+   - `sv_canpause = 0`
    - `sv_enable_joinfull = 1`
    - `sv_tcpr = 1`
    - `sv_tcpr_everything = 0`
