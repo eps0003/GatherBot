@@ -110,7 +110,7 @@ function connectionEnded() {
 	//message players in queue
 	let players = queue.getQueue();
 	for (let player of players) {
-		player.member.send(`You have been **removed** from the Gather queue because the **server went down**`);
+		player.member.send("You have been **removed** from the Gather queue because the **server went down**");
 	}
 
 	//clear queue

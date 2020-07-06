@@ -318,6 +318,11 @@ client.on("message", async (message) => {
 			return;
 		}
 
+		let players = queue.getQueue();
+		for (let player of players) {
+			player.member.send("You have been **removed** from the Gather queue because the queue was cleared **by an admin**");
+		}
+
 		queue.clear();
 		message.channel.send("Cleared the queue");
 	} else if (["end", "endmatch"].includes(command)) {
