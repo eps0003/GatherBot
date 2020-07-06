@@ -325,6 +325,7 @@ client.on("message", async (message) => {
 
 		queue.clear();
 		message.channel.send("Cleared the queue");
+		console.log("Queue cleared");
 	} else if (["end", "endmatch"].includes(command)) {
 		if (!isAdmin) {
 			message.channel.send("Only an admin can use this command");
