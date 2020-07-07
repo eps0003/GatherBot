@@ -63,12 +63,12 @@ client.on("message", async (message) => {
 		commands += `\`${p}forceremove/forcerem [Discord user]\` - Force removes a player from the queue\n`;
 		commands += `\`${p}addblue/addred [Discord user]\` - Adds a player to a team\n`;
 		commands += `\`${p}removeplayer/remplayer [Discord user]\` - Removes a player from the current match\n`;
+		commands += `\`${p}sub/swap [Current user] [New user]\` - Subs a non-participating player in place of a participating player\n`;
 		commands += `\`${p}setqueue/queuesize [size]\` - Sets the number of players required to begin a match\n`;
 		commands += `\`${p}clearqueue/clear\` - Clears the queue\n`;
 		commands += `\`${p}endmatch/end\` - Ends the current match\n`;
 		commands += `\`${p}templink [Discord user] [KAG username]\` - Temporarily links a Discord account to a KAG account\n`;
 		commands += `\`${p}clearcache\` - Clears the cache of linked accounts\n`;
-		commands += `\`${p}sub/swap [Current user] [New user]\` - Subs a non-participating player in place of a participating player\n`;
 		commands += `\`${p}islinked [Discord user/KAG username]\` - Checks whether a Discord user or KAG username is linked to an account`;
 		message.member.send(commands);
 		message.channel.send("Help has been sent to you through DMs");
