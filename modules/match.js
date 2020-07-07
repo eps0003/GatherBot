@@ -27,30 +27,28 @@ exports.endMatch = () => {
 };
 
 exports.matchEnded = (cause, winner, duration, map, blueTickets, redTickets) => {
-	if (this.isInProgress()) {
-		matchIsLive = false;
+	matchIsLive = false;
 
-		//announce winner
-		let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
-		let reason = matchEndReasons[cause];
+	//announce winner
+	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+	let reason = matchEndReasons[cause];
 
-		if ([this.matchEndCause.capturedFlags, this.matchEndCause.tickets].includes(cause)) {
-			let teamName = teams.getTeamName(winner);
-			channel.send(`**Match ended. ${teamName} won ${reason}!**`);
-			console.log(`Match ended. ${teamName} won ${reason}!`);
+	if ([this.matchEndCause.capturedFlags, this.matchEndCause.tickets].includes(cause)) {
+		let teamName = teams.getTeamName(winner);
+		channel.send(`**Match ended. ${teamName} won ${reason}!**`);
+		console.log(`Match ended. ${teamName} won ${reason}!`);
 
-			logMatch(cause, winner, duration, map, blueTickets, redTickets);
-		} else {
-			channel.send(`**Match ended ${reason}**`);
-			console.log(`Match ended ${reason}`);
-		}
-
-		teams.clear();
-		util.updatePresence();
-
-		//queue might have become full while match was in progress
-		queue.checkQueueFull();
+		logMatch(cause, winner, duration, map, blueTickets, redTickets);
+	} else {
+		channel.send(`**Match ended ${reason}**`);
+		console.log(`Match ended ${reason}`);
 	}
+
+	teams.clear();
+	util.updatePresence();
+
+	//queue might have become full while match was in progress
+	queue.checkQueueFull();
 };
 
 exports.isInProgress = () => {

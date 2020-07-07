@@ -164,7 +164,7 @@ exports.swapPlayer = (currentMember, newMember) => {
 
 			//update team
 			this.setTeam(team, players);
-			syncUpdatedTeams();
+			this.syncUpdatedTeams();
 
 			//announce sub
 			channel.send(`**${newName}** has subbed in for **${currentName}** on **${teamName}**`);
@@ -198,10 +198,10 @@ exports.announceTeams = () => {
 	}
 };
 
-function syncUpdatedTeams() {
+exports.syncUpdatedTeams = () => {
 	tcprTeams();
 	tcpr.socket.write(`getRules().set_bool('gather_teams_updated', true);\n`);
-}
+};
 
 function syncTeams() {
 	util.updatePresence();

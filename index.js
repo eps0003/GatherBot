@@ -61,6 +61,8 @@ client.on("message", async (message) => {
 		commands += `\`${p}ping\` - Checks if the bot is alive\n`;
 		commands += `\`${p}forceadd [Discord user]\` - Force adds a user to the queue\n`;
 		commands += `\`${p}forceremove/forcerem [Discord user]\` - Force remove a user from the queue\n`;
+		commands += `\`${p}addblue/addred [Discord user]\` - Adds a player to a team\n`;
+		commands += `\`${p}removeplayer/remplayer [Discord user]\` - Removes a player from the current match\n`;
 		commands += `\`${p}setqueue/queuesize [size]\` - Sets the number of players required to begin a match\n`;
 		commands += `\`${p}clearqueue/clear\` - Clears the queue\n`;
 		commands += `\`${p}endmatch/end\` - Ends the current match\n`;
@@ -362,6 +364,114 @@ client.on("message", async (message) => {
 		}
 
 		teams.swapPlayer(member1, member2);
+	} else if (["addblue", "addred"].includes(command)) {
+		if (!isAdmin) {
+			message.channel.send("Only an admin can add a player to a team");
+			return;
+		}
+
+		if (!match.isInProgress()) {
+			message.channel.send("There is no match in progress");
+			return;
+		}
+
+		if (args.length !== 1 || !args[0].match(Discord.MessageMentions.USERS_PATTERN)) {
+			message.channel.send(`Invalid command usage: \`${process.env.PREFIX}${command} [Discord user]\``);
+			return;
+		}
+
+		let member = message.mentions.members.first();
+		if (!member) {
+			message.channel.send(`The specified user is not a member of this Discord server`);
+			return;
+		}
+
+		let name = util.sanitise(member.displayName);
+
+		if (member.user.bot) {
+			message.channel.send(`**${name}** is a bot and cannot be added to a team`);
+			return;
+		}
+
+		if (match.isParticipating(member)) {
+			message.channel.send(`**${name}** is already participating in a match`);
+			return;
+		}
+
+		link.getKAGUsername(member, (username) => {
+			if (username) {
+				let team = ["addblue", "addred"].indexOf(command);
+				let teamName = teams.getTeamName(team);
+
+				let players = teams.getTeam(team);
+				players.push({ member, username });
+
+				teams.setTeam(team, players);
+				teams.syncUpdatedTeams();
+
+				message.channel.send(`**${name}** has been **added** to **${teamName}**`);
+				console.log(`Added ${username} (${member.user.tag}) to ${teamName}`);
+			} else {
+				message.channel.send(`**${name}** is yet to link their Discord account to their KAG account`);
+			}
+		});
+	} else if (["remplayer", "removeplayer"].includes(command)) {
+		if (!isAdmin) {
+			message.channel.send("Only an admin can remove a player from a team");
+			return;
+		}
+
+		if (!match.isInProgress()) {
+			message.channel.send("There is no match in progress");
+			return;
+		}
+
+		if (args.length !== 1 || !args[0].match(Discord.MessageMentions.USERS_PATTERN)) {
+			message.channel.send(`Invalid command usage: \`${process.env.PREFIX}${command} [Discord user]\``);
+			return;
+		}
+
+		let member = message.mentions.members.first();
+		if (!member) {
+			message.channel.send(`The specified user is not a member of this Discord server`);
+			return;
+		}
+
+		let name = util.sanitise(member.displayName);
+
+		if (!match.isParticipating(member)) {
+			message.channel.send(`**${name}** is not participating in a match`);
+			return;
+		}
+
+		let team = teams.getTeamNum(member);
+		let teamName = teams.getTeamName(team);
+		let players = teams.getTeam(team);
+
+		//remove player
+		for (let i in players) {
+			let player = players[i];
+			if (player.member == member) {
+				players.splice(i, 1);
+				console.log(`Removed ${player.username} (${member.user.tag}) from ${teamName}`);
+				break;
+			}
+		}
+
+		teams.setTeam(team, players);
+		message.channel.send(`**${name}** has been **removed** from **${teamName}**`);
+
+		if (match.isInProgress()) {
+			//still enough players for a match. update teams
+			teams.syncUpdatedTeams();
+
+			//remove team role from player
+			member.roles.remove(process.env.BLUE_TEAM_ROLE);
+			member.roles.remove(process.env.RED_TEAM_ROLE);
+		} else {
+			//removed last player. end match
+			match.endMatch();
+		}
 	}
 });
 

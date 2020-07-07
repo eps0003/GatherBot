@@ -100,7 +100,9 @@ function connectionEnded() {
 	isConnected = false;
 
 	//end match
-	match.matchEnded(match.matchEndCause.disconnected);
+	if (match.isInProgress()) {
+		match.matchEnded(match.matchEndCause.disconnected);
+	}
 
 	//announce server went down
 	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
