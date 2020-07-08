@@ -92,7 +92,7 @@ exports.splitIntoTeams = (players) => {
 };
 
 exports.scramble = () => {
-	this.splitIntoTeams(this.getPlayers());
+	this.splitIntoTeams(util.shuffle(this.getPlayers()));
 
 	let blueTeam = this.getBlueTeam();
 	let redTeam = this.getRedTeam();

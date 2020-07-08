@@ -98,7 +98,7 @@ exports.getQueue = () => {
 
 exports.checkQueueFull = () => {
 	if (this.isFull() && !match.isInProgress()) {
-		var players = shuffle(queue.splice(0, this.getSize()));
+		var players = util.shuffle(queue.splice(0, this.getSize()));
 
 		// remove queue role from players
 		for (let player of players) {
@@ -110,24 +110,3 @@ exports.checkQueueFull = () => {
 		teams.announceTeams();
 	}
 };
-
-//https://stackoverflow.com/a/2450976
-function shuffle(array) {
-	var currentIndex = array.length,
-		temporaryValue,
-		randomIndex;
-
-	// While there remain elements to shuffle...
-	while (0 !== currentIndex) {
-		// Pick a remaining element...
-		randomIndex = Math.floor(Math.random() * currentIndex);
-		currentIndex -= 1;
-
-		// And swap it with the current element.
-		temporaryValue = array[currentIndex];
-		array[currentIndex] = array[randomIndex];
-		array[randomIndex] = temporaryValue;
-	}
-
-	return array;
-}
