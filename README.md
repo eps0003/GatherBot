@@ -35,7 +35,6 @@ Gather is an CTF event involving the use of this Discord bot to organise matches
 3. Ensure the following settings are applied to `autoconfig.cfg`:
    - `sv_gamemode = CTF`
    - `sv_canpause = 0`
-   - `sv_enable_joinfull = 1`
    - `sv_tcpr = 1`
    - `sv_tcpr_everything = 0`
    - `sv_tcpr_timestamp = 0`
@@ -48,7 +47,8 @@ Gather is an CTF event involving the use of this Discord bot to organise matches
 2. Add the bot to your Discord server. I recommend using [this](https://discordapi.com/permissions.html#8) site to do so
 3. Make a copy of `example.env`, name it `.env`, and fill in all fields  
    **Note:** There should be no space between `=` and the value of each field (e.g. `PREFIX=!`)
-4. Run the bot by typing `npm start` in the base directory or by running `keepalive.sh`  
+4. Move the bot's administrator role above all other Gather roles so the bot is able to manage them
+5. Run the bot by typing `npm start` in the base directory or by running `keepalive.sh`  
    The console output should be similar to the following:  
    ```
    Logged into Discord as Gather
@@ -74,7 +74,7 @@ Gather is now ready to go!
 ## Acknowledgements
 Thanks to the following people for helping Gather reach the stage it's currently in:
 - **[Cameron](https://forum.thd.vg/members/6469/)** - created and hosted the [original version of Gather](https://github.com/CameronTenTen/discordBot)
-- **[buildfast115](https://forum.thd.vg/members/13758/)** - providing a server to host this version of Gather
+- **[buildfast115](https://forum.thd.vg/members/13758/)** & **[Waxtor](https://forum.thd.vg/members/18305/)** - providing a server to host this version of Gather
 - **[OCE community](https://discord.com/invite/5ukqMU7)** - coming together to play Gather every evening
 
 ## License
