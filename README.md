@@ -48,7 +48,8 @@ Gather is an CTF event involving the use of this Discord bot to organise matches
 3. Make a copy of `example.env`, name it `.env`, and fill in all fields  
    **Note:** There should be no space between `=` and the value of each field (e.g. `PREFIX=!`)
 4. Move the bot's administrator role above all other Gather roles so the bot is able to manage them
-5. Run the bot by typing `npm start` in the base directory or by running `keepalive.sh`  
+5. Type `npm install` to install the dependencies
+6. Run the bot by typing `npm start` in the base directory or by running `keepalive.sh`  
    The console output should be similar to the following:  
    ```
    Logged into Discord as Gather
@@ -58,6 +59,8 @@ Gather is an CTF event involving the use of this Discord bot to organise matches
    ```
    The bot has successfully established a connection with the Gather server and is ready for use
    ```
+   If the bot connects but then immediately disconnects, the RCON password in `.env` does not match the RCON password on the server
+
 Gather is now ready to go!
 
 ## Customisation
