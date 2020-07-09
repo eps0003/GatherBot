@@ -400,15 +400,24 @@ client.on("message", async (message) => {
 
 		link.getKAGUsername(member, (username) => {
 			if (username) {
+				//get team
 				let team = ["addblue", "addred"].indexOf(command);
 				let teamName = teams.getTeamName(team);
 
+				//add to team
 				let players = teams.getTeam(team);
 				players.push({ member, username });
 
+				//apply teams
 				teams.setTeam(team, players);
 				teams.syncUpdatedTeams();
 
+				//remove from queue
+				if (queue.has(member)) {
+					queue.remove(member);
+				}
+
+				//announce
 				message.channel.send(`**${name}** has been **added** to **${teamName}**`);
 				console.log(`Added ${username} (${member.user.tag}) to ${teamName}`);
 			} else {
