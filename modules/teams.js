@@ -171,7 +171,7 @@ exports.swapPlayer = (currentMember, newMember) => {
 			console.log(`${newMember.user.tag}** subbed in for **${currentMember.user.tag} on ${teamName}`);
 
 			//dm user
-			currentMember.send("You have been **subbed out** of your Gather match");
+			currentMember.send("You have been **subbed out** of your Gather match").catch(() => {});
 		} else {
 			channel.send(`**${newName}** is yet to link their Discord account to their KAG account`);
 		}
@@ -194,7 +194,7 @@ exports.announceTeams = () => {
 
 	let players = this.getPlayers();
 	for (let player of players) {
-		player.member.send(`**Your Gather match is about to start!**\n**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`);
+		player.member.send(`**Your Gather match is about to start!**\n**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`).catch(() => {});
 	}
 };
 

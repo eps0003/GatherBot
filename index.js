@@ -29,7 +29,7 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
 		if (queue.has(newPresence.member)) {
 			let statusName = util.statusNames[newPresence.status];
 			queue.remove(newPresence.member, ` because they went **${statusName}** on Discord`);
-			newPresence.member.send(`You have been **removed** from the Gather queue because you went **${statusName}** on Discord`);
+			newPresence.member.send(`You have been **removed** from the Gather queue because you went **${statusName}** on Discord`).catch(() => {});
 		}
 	}
 });
@@ -286,7 +286,7 @@ client.on("message", async (message) => {
 		}
 
 		if (queue.has(member)) {
-			member.send("You have been **removed** from the Gather queue **by an admin**");
+			member.send("You have been **removed** from the Gather queue **by an admin**").catch(() => {});
 		}
 
 		queue.remove(member, " **by an admin**");
@@ -322,7 +322,7 @@ client.on("message", async (message) => {
 
 		let players = queue.getQueue();
 		for (let player of players) {
-			player.member.send("You have been **removed** from the Gather queue because the queue was cleared **by an admin**");
+			player.member.send("You have been **removed** from the Gather queue because the queue was cleared **by an admin**").catch(() => {});
 		}
 
 		queue.clear();
@@ -400,24 +400,15 @@ client.on("message", async (message) => {
 
 		link.getKAGUsername(member, (username) => {
 			if (username) {
-				//get team
 				let team = ["addblue", "addred"].indexOf(command);
 				let teamName = teams.getTeamName(team);
 
-				//add to team
 				let players = teams.getTeam(team);
 				players.push({ member, username });
 
-				//apply teams
 				teams.setTeam(team, players);
 				teams.syncUpdatedTeams();
 
-				//remove from queue
-				if (queue.has(member)) {
-					queue.remove(member);
-				}
-
-				//announce
 				message.channel.send(`**${name}** has been **added** to **${teamName}**`);
 				console.log(`Added ${username} (${member.user.tag}) to ${teamName}`);
 			} else {
