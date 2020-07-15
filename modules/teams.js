@@ -168,7 +168,7 @@ exports.swapPlayer = (currentMember, newMember) => {
 
 			//announce sub
 			channel.send(`**${newName}** has subbed in for **${currentName}** on **${teamName}**`);
-			console.log(`${newMember.user.tag}** subbed in for **${currentMember.user.tag} on ${teamName}`);
+			console.log(`${newMember.user.tag} subbed in for ${currentMember.user.tag} on ${teamName}`);
 
 			//dm user
 			currentMember.send("You have been **subbed out** of your Gather match").catch(() => {});
