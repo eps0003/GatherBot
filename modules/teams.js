@@ -178,6 +178,46 @@ exports.swapPlayer = (currentMember, newMember) => {
 	});
 };
 
+exports.removePlayer = (member, reason = "") => {
+	let name = util.sanitise(member.displayName);
+	let team = this.getTeamNum(member);
+	let teamName = this.getTeamName(team);
+	let players = this.getTeam(team);
+	let removedPlayer = false;
+
+	//remove player
+	for (let i in players) {
+		let player = players[i];
+		if (player.member == member) {
+			players.splice(i, 1);
+			removedPlayer = true;
+			console.log(`Removed ${player.username} (${member.user.tag}) from ${teamName}${reason}`);
+			break;
+		}
+	}
+
+	if (removedPlayer) {
+		//apply updated team
+		this.setTeam(team, players);
+
+		//announce removed player
+		let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+		channel.send(`**${name}** has been **removed** from **${teamName}**${reason}`);
+
+		if (match.isInProgress()) {
+			//still enough players for a match. update teams
+			this.syncUpdatedTeams();
+
+			//remove team role from player
+			member.roles.remove(process.env.BLUE_TEAM_ROLE);
+			member.roles.remove(process.env.RED_TEAM_ROLE);
+		} else {
+			//removed last player. end match
+			match.endMatch();
+		}
+	}
+};
+
 exports.announceTeams = () => {
 	let blueTeam = this.getBlueTeam();
 	let redTeam = this.getRedTeam();

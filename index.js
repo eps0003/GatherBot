@@ -34,6 +34,16 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
 	}
 });
 
+client.on("guildMemberRemove", (member) => {
+	if (queue.has(member)) {
+		queue.remove(member, " because they **left the Discord**");
+	}
+
+	if (match.isParticipating(member)) {
+		teams.removePlayer(member, " because they **left the Discord**");
+	}
+});
+
 client.on("message", async (message) => {
 	let wrongGuild = message.guild && message.guild.id !== process.env.GUILD;
 	let botMessage = message.author.bot;
@@ -453,34 +463,7 @@ client.on("message", async (message) => {
 			return;
 		}
 
-		let team = teams.getTeamNum(member);
-		let teamName = teams.getTeamName(team);
-		let players = teams.getTeam(team);
-
-		//remove player
-		for (let i in players) {
-			let player = players[i];
-			if (player.member == member) {
-				players.splice(i, 1);
-				console.log(`Removed ${player.username} (${member.user.tag}) from ${teamName}`);
-				break;
-			}
-		}
-
-		teams.setTeam(team, players);
-		message.channel.send(`**${name}** has been **removed** from **${teamName}**`);
-
-		if (match.isInProgress()) {
-			//still enough players for a match. update teams
-			teams.syncUpdatedTeams();
-
-			//remove team role from player
-			member.roles.remove(process.env.BLUE_TEAM_ROLE);
-			member.roles.remove(process.env.RED_TEAM_ROLE);
-		} else {
-			//removed last player. end match
-			match.endMatch();
-		}
+		teams.removePlayer(member);
 	}
 });
 
