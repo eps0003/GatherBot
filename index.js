@@ -74,7 +74,7 @@ client.on("message", async (message) => {
 		commands += `\`${p}addblue/addred [Discord user]\` - Adds a player to a team\n`;
 		commands += `\`${p}removeplayer/remplayer [Discord user]\` - Removes a player from the current match\n`;
 		commands += `\`${p}sub/swap [Current user] [New user]\` - Subs a non-participating player in place of a participating player\n`;
-		commands += `\`${p}setqueue/queuesize [size]\` - Sets the number of players required to begin a match\n`;
+		commands += `\`${p}setqueue/queuesize/sq/qs [size]\` - Sets the number of players required to begin a match\n`;
 		commands += `\`${p}clearqueue/clear\` - Clears the queue\n`;
 		commands += `\`${p}endmatch/end\` - Ends the current match\n`;
 		commands += `\`${p}templink [Discord user] [KAG username]\` - Temporarily links a Discord account to a KAG account\n`;
@@ -300,7 +300,7 @@ client.on("message", async (message) => {
 		}
 
 		queue.remove(member, " **by an admin**");
-	} else if (["setqueue", "queuesize"].includes(command)) {
+	} else if (["setqueue", "queuesize", "sq", "qs"].includes(command)) {
 		if (!isAdmin) {
 			message.channel.send("Only an admin can use this command");
 			return;
