@@ -71,7 +71,7 @@ client.on("message", async (message) => {
 		commands += `\`${p}ping\` - Checks if the bot is alive\n`;
 		commands += `\`${p}forceadd [Discord user]\` - Force adds a player to the queue\n`;
 		commands += `\`${p}forceremove/forcerem [Discord user]\` - Force removes a player from the queue\n`;
-		commands += `\`${p}addblue/addred [Discord user]\` - Adds a player to a team\n`;
+		commands += `\`${p}addblue/addred/addrandom [Discord user]\` - Adds a player to a team\n`;
 		commands += `\`${p}removeplayer/remplayer [Discord user]\` - Removes a player from the current match\n`;
 		commands += `\`${p}sub/swap [Current user] [New user]\` - Subs a non-participating player in place of a participating player\n`;
 		commands += `\`${p}setqueue/queuesize/sq/qs [size]\` - Sets the number of players required to begin a match\n`;
@@ -374,7 +374,7 @@ client.on("message", async (message) => {
 		}
 
 		teams.swapPlayer(member1, member2);
-	} else if (["addblue", "addred"].includes(command)) {
+	} else if (["addblue", "addred", "addrandom"].includes(command)) {
 		if (!isAdmin) {
 			message.channel.send("Only an admin can add a player to a team");
 			return;
@@ -411,7 +411,7 @@ client.on("message", async (message) => {
 		link.getKAGUsername(member, (username) => {
 			if (username) {
 				//get team
-				let team = ["addblue", "addred"].indexOf(command);
+				let team = command == "addrandom" ? Math.floor(Math.random() * 2) : ["addblue", "addred"].indexOf(command);
 				let teamName = teams.getTeamName(team);
 
 				//add to team
