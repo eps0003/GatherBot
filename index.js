@@ -80,8 +80,15 @@ client.on("message", async (message) => {
 		commands += `\`${p}templink [Discord user] [KAG username]\` - Temporarily links a Discord account to a KAG account\n`;
 		commands += `\`${p}clearcache\` - Clears the cache of linked accounts\n`;
 		commands += `\`${p}islinked [Discord user/KAG username]\` - Checks whether a Discord user or KAG username is linked to an account`;
-		message.member.send(commands);
-		message.channel.send("Help has been sent to you through DMs");
+
+		message.member
+			.send(commands)
+			.then(() => {
+				message.channel.send("Help has been sent to you through DMs");
+			})
+			.catch(() => {
+				message.channel.send("I am unable to send a DM to you. Please change your privacy settings");
+			});
 	} else if (command === "ping" && isAdmin) {
 		message.channel.send("Pong!");
 	} else if (wrongChannel) {
