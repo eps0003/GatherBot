@@ -1,9 +1,9 @@
 const net = require("net");
-const { client } = require("../index.js");
-const queue = require("./queue.js");
-const match = require("./match.js");
-const teams = require("./teams.js");
-const util = require("./utilities.js");
+const { client } = require("../index");
+const queue = require("./queue");
+const match = require("./match");
+const teams = require("./teams");
+const util = require("./utilities");
 
 var isConnected = false;
 var sentWarning = false;
@@ -17,7 +17,7 @@ exports.connect = () => {
 	this.socket.connect({ port: process.env.SERVER_PORT, host: process.env.SERVER_HOST }, () => {
 		this.socket.write(`${process.env.RCON_PASSWORD}\n`);
 
-		let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+		const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 		channel.send("**The bot has successfully established a connection with the Gather server and is ready for use**");
 		console.log(`Connected to ${exports.getAddress()}`);
 
@@ -63,27 +63,26 @@ exports.connect = () => {
 		if (command === "started") {
 			match.matchStarted();
 		} else if (command === "ended") {
-			let cause = Number(args[0]);
-			let winner = Number(args[1]);
-			let duration = Number(args[2]);
-			let map = args[3];
-			let blueTickets = Number(args[4]);
-			let redTickets = Number(args[5]);
+			const cause = Number(args[0]);
+			const winner = Number(args[1]);
+			const duration = Number(args[2]);
+			const map = args[3];
+			const blueTickets = Number(args[4]);
+			const redTickets = Number(args[5]);
 
 			match.matchEnded(cause, winner, duration, map, blueTickets, redTickets);
 		} else if (command === "scramble") {
 			teams.scramble();
 		} else if (command === "status") {
-			let state = Number(args[0]);
-			let blueTickets = Number(args[1]);
-			let redTickets = Number(args[2]);
-			let blueAlive = Number(args[3]);
-			let redAlive = Number(args[4]);
+			const state = Number(args[0]);
+			const blueTickets = Number(args[1]);
+			const redTickets = Number(args[2]);
+			const blueAlive = Number(args[3]);
+			const redAlive = Number(args[4]);
+			const stateName = util.stateNames[state];
 
-			let stateNames = ["Intermission", "Warmup", "In Progress", "Game Over"];
-
-			let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
-			channel.send(`**State:** ${stateNames[state]}\n**Blue Team:** ${blueTickets} ${util.plural(blueTickets, "ticket")}, ${blueAlive} alive\n**Red Team:** ${redTickets} ${util.plural(redTickets, "ticket")}, ${redAlive} alive`);
+			const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+			channel.send(`**State:** ${stateName}\n**Blue Team:** ${blueTickets} ${util.plural(blueTickets, "ticket")}, ${blueAlive} alive\n**Red Team:** ${redTickets} ${util.plural(redTickets, "ticket")}, ${redAlive} alive`);
 		}
 	});
 };
@@ -105,13 +104,13 @@ function connectionEnded() {
 	}
 
 	//announce server went down
-	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+	const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 	channel.send("**The Gather server just went down and, as a result, the bot will no longer be accepting some Gather-related commands. The bot will automatically attempt to re-establish a connection with the server**");
 	console.log(`Lost connection with ${exports.getAddress()}`);
 
 	//message players in queue
-	let players = queue.getQueue();
-	for (let player of players) {
+	const players = queue.getQueue();
+	for (const player of players) {
 		player.member.send("You have been **removed** from the Gather queue because the **server went down**").catch(() => {});
 	}
 

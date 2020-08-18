@@ -1,15 +1,15 @@
-const { client } = require("../index.js");
-const link = require("./link.js");
-const match = require("./match.js");
-const teams = require("./teams.js");
-const util = require("./utilities.js");
+const { client } = require("../index");
+const link = require("./link");
+const match = require("./match");
+const teams = require("./teams");
+const util = require("./utilities");
 
 var queue = [];
 var size = process.env.QUEUE_SIZE;
 
 exports.add = (member, reason = "") => {
-	let name = util.sanitise(member.displayName);
-	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+	const name = util.sanitise(member.displayName);
+	const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 
 	link.getKAGUsername(member, (username) => {
 		if (username) {
@@ -26,23 +26,27 @@ exports.add = (member, reason = "") => {
 				channel.send(`**${name}** is already in the queue`);
 			}
 		} else {
-			link.showLinkInstructions();
+			link.showLinkInstructions(channel);
 		}
 	});
 };
 
 exports.remove = (member, reason = "") => {
-	let name = util.sanitise(member.displayName);
-	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+	const name = util.sanitise(member.displayName);
+	const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 
-	for (let i in queue) {
-		let player = queue[i];
+	for (const i in queue) {
+		const player = queue[i];
+
 		if (player.member === member) {
 			queue.splice(i, 1);
+
 			member.roles.remove(process.env.QUEUE_ROLE);
 			util.updatePresence();
+
 			channel.send(`**${name}** has been **removed** from the queue${reason} **(${queue.length}/${this.getSize()})**`);
 			console.log(`Removed ${player.username} (${member.user.tag}) from the queue (${queue.length}/${this.getSize()})`);
+
 			return;
 		}
 	}
@@ -52,6 +56,7 @@ exports.remove = (member, reason = "") => {
 
 exports.clear = () => {
 	queue = [];
+
 	util.clearRole(process.env.QUEUE_ROLE);
 	util.updatePresence();
 };
@@ -61,12 +66,7 @@ exports.getPlayerCount = () => {
 };
 
 exports.has = (member) => {
-	for (let player of queue) {
-		if (player.member === member) {
-			return true;
-		}
-	}
-	return false;
+	return queue.some((player) => player.member === member);
 };
 
 exports.getSize = () => {
@@ -76,7 +76,7 @@ exports.getSize = () => {
 exports.setSize = (newSize) => {
 	size = newSize;
 
-	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+	const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 	channel.send(`The queue has been changed to a size of **${size} ${util.plural(size, "player")}**`);
 	console.log(`Set queue size to ${size} ${util.plural(size, "player")}`);
 
@@ -98,10 +98,10 @@ exports.getQueue = () => {
 
 exports.checkQueueFull = () => {
 	if (this.isFull() && !match.isInProgress()) {
-		var players = util.shuffle(queue.splice(0, this.getSize()));
+		const players = util.shuffle(queue.splice(0, this.getSize()));
 
 		// remove queue role from players
-		for (let player of players) {
+		for (const player of players) {
 			player.member.roles.remove(process.env.QUEUE_ROLE);
 		}
 

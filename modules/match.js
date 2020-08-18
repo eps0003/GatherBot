@@ -1,13 +1,14 @@
-const { client } = require("../index.js");
-const teams = require("./teams.js");
-const queue = require("./queue.js");
-const tcpr = require("./tcpr.js");
-const util = require("./utilities.js");
-var format = require("format-duration");
+const { client } = require("../index");
+const teams = require("./teams");
+const queue = require("./queue");
+const tcpr = require("./tcpr");
+const util = require("./utilities");
+const format = require("format-duration");
+
+const matchEndReasons = ["because the server went offline", "prematurely by an admin", "by capturing the enemy flags", "by killing off the enemy"];
+const matchEndReasonsShort = ["disconnected", "forced", "flags", "tickets"];
 
 var matchIsLive = false;
-var matchEndReasons = ["because the server went offline", "prematurely by an admin", "by capturing the enemy flags", "by killing off the enemy"];
-var matchEndReasonsShort = ["disconnected", "forced", "flags", "tickets"];
 
 exports.matchEndCause = Object.freeze({
 	disconnected: 0,
@@ -30,11 +31,11 @@ exports.matchEnded = (cause, winner, duration, map, blueTickets, redTickets) => 
 	matchIsLive = false;
 
 	//announce winner
-	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
-	let reason = matchEndReasons[cause];
+	const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+	const reason = matchEndReasons[cause];
 
 	if ([this.matchEndCause.capturedFlags, this.matchEndCause.tickets].includes(cause)) {
-		let teamName = teams.getTeamName(winner);
+		const teamName = teams.getTeamName(winner);
 		channel.send(`**Match ended. ${teamName} won ${reason}!**`);
 		console.log(`Match ended. ${teamName} won ${reason}!`);
 
@@ -64,19 +65,19 @@ exports.isLive = () => {
 };
 
 function logMatch(cause, winner, duration, map, blueTickets, redTickets) {
-	let blueTeam = teams.getBlueTeam();
-	let redTeam = teams.getRedTeam();
+	const blueTeam = teams.getBlueTeam();
+	const redTeam = teams.getRedTeam();
 
-	let blueTeamMentions = blueTeam.map((player) => player.member.toString()).join(" ");
-	let redTeamMentions = redTeam.map((player) => player.member.toString()).join(" ");
+	const blueTeamMentions = blueTeam.map((player) => player.member.toString()).join(" ");
+	const redTeamMentions = redTeam.map((player) => player.member.toString()).join(" ");
 
-	let winningTeamName = teams.getTeamName(winner);
-	let durationFormatted = format(duration / 0.03);
-	let reason = matchEndReasonsShort[cause];
+	const winningTeamName = teams.getTeamName(winner);
+	const durationFormatted = format(duration / 0.03);
+	const reason = matchEndReasonsShort[cause];
 
-	let blueTicketText = blueTickets < 0 ? "∞" : blueTickets;
-	let redTicketText = redTickets < 0 ? "∞" : redTickets;
+	const blueTicketText = blueTickets < 0 ? "∞" : blueTickets;
+	const redTicketText = redTickets < 0 ? "∞" : redTickets;
 
-	let channel = client.channels.cache.get(process.env.MATCH_HISTORY);
+	const channel = client.channels.cache.get(process.env.MATCH_HISTORY);
 	channel.send(`**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Map: ** ${util.sanitise(map)}\n**Duration:** ${durationFormatted}\n**Tickets:** ${blueTicketText} Blue - ${redTicketText} Red\n**Winner:** ${winningTeamName} (${reason})`);
 }

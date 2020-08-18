@@ -1,9 +1,9 @@
-const { client } = require("../index.js");
-const tcpr = require("./tcpr.js");
-const util = require("./utilities.js");
-const match = require("./match.js");
-const link = require("./link.js");
-const queue = require("./queue.js");
+const { client } = require("../index");
+const tcpr = require("./tcpr");
+const util = require("./utilities");
+const match = require("./match");
+const link = require("./link");
+const queue = require("./queue");
 
 var blueTeam = [];
 var redTeam = [];
@@ -27,16 +27,12 @@ exports.getTeamName = (team) => {
 };
 
 exports.getTeamNum = (member) => {
-	for (let player of blueTeam) {
-		if (player.member === member) {
-			return 0;
-		}
+	if (blueTeam.some((player) => player.member === member)) {
+		return 0;
 	}
 
-	for (let player of redTeam) {
-		if (player.member === member) {
-			return 1;
-		}
+	if (redTeam.some((player) => player.member === member)) {
+		return 1;
 	}
 
 	return -1;
@@ -53,7 +49,7 @@ exports.getRedTeam = () => {
 exports.setBlueTeam = (players) => {
 	blueTeam = players;
 
-	for (let player of players) {
+	for (const player of players) {
 		player.member.roles.remove(process.env.RED_TEAM_ROLE);
 		player.member.roles.add(process.env.BLUE_TEAM_ROLE);
 	}
@@ -62,7 +58,7 @@ exports.setBlueTeam = (players) => {
 exports.setRedTeam = (players) => {
 	redTeam = players;
 
-	for (let player of players) {
+	for (const player of players) {
 		player.member.roles.remove(process.env.BLUE_TEAM_ROLE);
 		player.member.roles.add(process.env.RED_TEAM_ROLE);
 	}
@@ -85,7 +81,7 @@ exports.getPlayerCount = () => {
 
 exports.splitIntoTeams = (players) => {
 	//for odd-sized queue, randomly select a team to be the larger team
-	var blueSize = Math.random() > 0.5 ? Math.floor(players.length / 2) : Math.ceil(players.length / 2);
+	const blueSize = Math.random() > 0.5 ? Math.floor(players.length / 2) : Math.ceil(players.length / 2);
 	this.setBlueTeam(players.splice(0, blueSize));
 	this.setRedTeam(players);
 	syncTeams();
@@ -94,18 +90,15 @@ exports.splitIntoTeams = (players) => {
 exports.scramble = () => {
 	this.splitIntoTeams(util.shuffle(this.getPlayers()));
 
-	let blueTeam = this.getBlueTeam();
-	let redTeam = this.getRedTeam();
+	const blueTeam = this.getBlueTeam();
+	const redTeam = this.getRedTeam();
 
-	let blueTeamUsernames = blueTeam.map((player) => util.sanitise(player.username)).join(", ");
-	let redTeamUsernames = redTeam.map((player) => util.sanitise(player.username)).join(", ");
-
-	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
-	channel.send(`**The teams have been scrambled**\n**Blue Team:** ${blueTeamUsernames}\n**Red Team:** ${redTeamUsernames}`);
+	const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+	channel.send(`**The teams have been scrambled**\n**Blue Team:** ${util.listUsernames(blueTeam)}\n**Red Team:** ${util.listUsernames(redTeam)}`);
 
 	console.log("Teams scrambled");
-	console.log(`Blue Team: ${blueTeam.map((player) => player.username).join(", ")}`);
-	console.log(`Red Team: ${redTeam.map((player) => player.username).join(", ")}`);
+	console.log(`Blue Team: ${util.listUsernames(blueTeam, false)}`);
+	console.log(`Red Team: ${util.listUsernames(redTeam, false)}`);
 };
 
 exports.getPlayers = () => {
@@ -123,10 +116,10 @@ exports.getTeam = (team) => {
 };
 
 exports.swapPlayer = (currentMember, newMember) => {
-	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+	const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 
-	let currentName = util.sanitise(currentMember.displayName);
-	let newName = util.sanitise(newMember.displayName);
+	const currentName = util.sanitise(currentMember.displayName);
+	const newName = util.sanitise(newMember.displayName);
 
 	if (!match.isParticipating(currentMember)) {
 		channel.send(`**${currentName}** is not participating in a match`);
@@ -139,56 +132,58 @@ exports.swapPlayer = (currentMember, newMember) => {
 	}
 
 	link.getKAGUsername(newMember, (username) => {
-		if (username) {
-			let team = this.getTeamNum(currentMember);
-			let teamName = this.getTeamName(team);
-			let players = this.getTeam(team);
-
-			//swap
-			for (let i in players) {
-				let player = players[i];
-				if (player.member == currentMember) {
-					players[i] = { member: newMember, username };
-					break;
-				}
-			}
-
-			//remove team role
-			let roles = [process.env.BLUE_TEAM_ROLE, process.env.RED_TEAM_ROLE];
-			currentMember.roles.remove(roles[team]);
-
-			//remove from queue
-			if (queue.has(newMember)) {
-				queue.remove(newMember);
-			}
-
-			//update team
-			this.setTeam(team, players);
-			this.syncUpdatedTeams();
-
-			//announce sub
-			channel.send(`**${newName}** has subbed in for **${currentName}** on **${teamName}**`);
-			console.log(`${newMember.user.tag} subbed in for ${currentMember.user.tag} on ${teamName}`);
-
-			//dm user
-			currentMember.send("You have been **subbed out** of your Gather match").catch(() => {});
-		} else {
+		if (!username) {
 			channel.send(`**${newName}** is yet to link their Discord account to their KAG account`);
+			return;
 		}
+
+		const team = this.getTeamNum(currentMember);
+		const teamName = this.getTeamName(team);
+		const players = this.getTeam(team);
+
+		//swap
+		for (const i in players) {
+			const player = players[i];
+			if (player.member === currentMember) {
+				players[i] = { member: newMember, username };
+				break;
+			}
+		}
+
+		//remove team role
+		const roles = [process.env.BLUE_TEAM_ROLE, process.env.RED_TEAM_ROLE];
+		currentMember.roles.remove(roles[team]);
+
+		//remove from queue
+		if (queue.has(newMember)) {
+			queue.remove(newMember);
+		}
+
+		//update team
+		this.setTeam(team, players);
+		this.syncUpdatedTeams();
+
+		//announce sub
+		channel.send(`**${newName}** has subbed in for **${currentName}** on **${teamName}**`);
+		console.log(`${newMember.user.tag} subbed in for ${currentMember.user.tag} on ${teamName}`);
+
+		//dm user
+		currentMember.send("You have been **subbed out** of your Gather match").catch(() => {});
 	});
 };
 
 exports.removePlayer = (member, reason = "") => {
-	let name = util.sanitise(member.displayName);
-	let team = this.getTeamNum(member);
-	let teamName = this.getTeamName(team);
-	let players = this.getTeam(team);
+	const name = util.sanitise(member.displayName);
+	const team = this.getTeamNum(member);
+	const teamName = this.getTeamName(team);
+	const players = this.getTeam(team);
+
 	let removedPlayer = false;
 
 	//remove player
-	for (let i in players) {
-		let player = players[i];
-		if (player.member == member) {
+	for (const i in players) {
+		const player = players[i];
+		if (player.member === member) {
 			players.splice(i, 1);
 			removedPlayer = true;
 			console.log(`Removed ${player.username} (${member.user.tag}) from ${teamName}${reason}`);
@@ -201,7 +196,7 @@ exports.removePlayer = (member, reason = "") => {
 		this.setTeam(team, players);
 
 		//announce removed player
-		let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+		const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 		channel.send(`**${name}** has been **removed** from **${teamName}**${reason}`);
 
 		if (match.isInProgress()) {
@@ -219,21 +214,21 @@ exports.removePlayer = (member, reason = "") => {
 };
 
 exports.announceTeams = () => {
-	let blueTeam = this.getBlueTeam();
-	let redTeam = this.getRedTeam();
+	const blueTeam = this.getBlueTeam();
+	const redTeam = this.getRedTeam();
 
-	let blueTeamMentions = blueTeam.map((player) => player.member.toString()).join(" ");
-	let redTeamMentions = redTeam.map((player) => player.member.toString()).join(" ");
+	const blueTeamMentions = util.listUserMentions(blueTeam);
+	const redTeamMentions = util.listUserMentions(redTeam);
 
-	let channel = client.channels.cache.get(process.env.GATHER_GENERAL);
+	const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
 	channel.send(`**A Gather match is about to start!**\n**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`);
 
 	console.log("Teams set");
-	console.log(`Blue Team: ${blueTeam.map((player) => player.username).join(", ")}`);
-	console.log(`Red Team: ${redTeam.map((player) => player.username).join(", ")}`);
+	console.log(`Blue Team: ${util.listUsernames(blueTeam, false)}`);
+	console.log(`Red Team: ${util.listUsernames(redTeam, false)}`);
 
-	let players = this.getPlayers();
-	for (let player of players) {
+	const players = this.getPlayers();
+	for (const player of players) {
 		player.member.send(`**Your Gather match is about to start!**\n**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`).catch(() => {});
 	}
 };
