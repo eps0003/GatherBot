@@ -54,11 +54,11 @@ Gather is an CTF event involving the use of this Discord bot to organise matches
 
 1. Create an [application](https://discord.com/developers/applications) and set it as a bot user
 2. Add the bot to your Discord server. I recommend using [this](https://discordapi.com/permissions.html#8) site to do so
-3. Make a copy of `example.env`, name it `.env`, and fill in all fields
+3. Make a copy of `example.env`, name it `.env`, and fill in all fields  
    **Note:** There should be no space between `=` and the value of each field (e.g. `PREFIX=!`)
 4. Move the bot's administrator role above all other Gather roles so the bot is able to manage them
 5. Type `npm install` to install the dependencies
-6. Run the bot by typing `npm start` in the base directory or by running `keepalive.sh`
+6. Run the bot by typing `npm start` in the base directory or by running `keepalive.sh`  
    The console output should be similar to the following:
    ```
    Logged into Discord as Gather
@@ -76,7 +76,7 @@ Gather is now ready to go!
 
 - Add a custom mapcycle
 - Tweak the mod properties in `GatherLite/gather.cfg`
-- Tweak the balance of CTF (you will need modding experience to do this)
+- Tweak the balance of CTF (you will need modding experience to do this)  
   Some suggestions include:
   - Adjust the costs of shop items
   - Adjust the coin rewards for building, dealing damage, destroying siege, etc.
