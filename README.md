@@ -1,4 +1,4 @@
-<img src="icon.png" align="left" height="74" />
+<img src="icon.png" alt="Gather icon" align="left" height="74" />
 
 # KAG Gather
 
