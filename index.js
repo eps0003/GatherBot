@@ -20,6 +20,7 @@ const tcpr = require("./modules/tcpr");
 const queue = require("./modules/queue");
 const match = require("./modules/match");
 const teams = require("./modules/teams");
+const stats = require("./modules/stats");
 
 client.on("error", console.error);
 
@@ -30,6 +31,7 @@ client.on("ready", () => {
 	queue.clear();
 	teams.clear();
 	util.updatePresence();
+	stats.init();
 });
 
 client.on("presenceUpdate", (oldPresence, newPresence) => {
