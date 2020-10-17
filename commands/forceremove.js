@@ -18,7 +18,7 @@ module.exports = {
 
 		const member = message.mentions.members.first();
 		if (!member) {
-			message.channel.send(`The specified user is not a member of this Discord server`);
+			message.channel.send("The specified user is not a member of this Discord server");
 			return;
 		}
 

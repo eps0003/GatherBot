@@ -20,7 +20,7 @@ module.exports = {
 
 		//user not in server
 		if (!member) {
-			message.channel.send(`The specified user is not a member of this Discord server`);
+			message.channel.send("The specified user is not a member of this Discord server");
 			return;
 		}
 
