@@ -12,7 +12,7 @@ module.exports = {
 		const status = message.member.presence.status;
 		if (match.isParticipating(message.member)) {
 			message.channel.send("You **cannot add** to the queue while **participating** in a match");
-		} else if (status !== "online") {
+		} else if (["idle", "offline"].includes(status)) {
 			const statusName = util.statusNames[status];
 			message.channel.send(`You **cannot add** to the queue while you are **${statusName}** on Discord`);
 		} else {
