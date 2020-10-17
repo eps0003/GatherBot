@@ -82,7 +82,7 @@ exports.connect = () => {
 			const stateName = util.stateNames[state];
 
 			const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
-			channel.send(`**State:** ${stateName}\n**Blue Team:** ${blueTickets} ${util.plural(blueTickets, "ticket")}, ${blueAlive} alive\n**Red Team:** ${redTickets} ${util.plural(redTickets, "ticket")}, ${redAlive} alive`);
+			channel.send(`**State:** ${stateName}\n**${teams.getTeamName(0)}:** ${blueTickets} ${util.plural(blueTickets, "ticket")}, ${blueAlive} alive\n**${teams.getTeamName(1)}:** ${redTickets} ${util.plural(redTickets, "ticket")}, ${redAlive} alive`);
 		}
 	});
 };
