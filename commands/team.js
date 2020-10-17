@@ -11,15 +11,15 @@ module.exports = {
 	execute(message, args) {
 		const name = util.sanitise(message.member.displayName);
 		const team = teams.getTeamNum(message.member);
-		switch (team) {
-			case 0:
-				message.channel.send(`**${name}** is on **Blue Team**`);
-				break;
-			case 1:
-				message.channel.send(`**${name}** is on **Red Team**`);
-				break;
-			default:
-				message.channel.send(`**${name}** is **not participating** in this match`);
+
+		if (team > -1)
+		{
+			const teamName = teams.getTeamName(team);
+			message.channel.send(`**${name}** is on **${teamName}**`);
+		}
+		else
+		{
+			message.channel.send(`**${name}** is **not participating** in this match`);
 		}
 	},
 };

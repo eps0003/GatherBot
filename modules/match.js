@@ -79,5 +79,5 @@ function logMatch(cause, winner, duration, map, blueTickets, redTickets) {
 	const redTicketText = redTickets < 0 ? "∞" : redTickets;
 
 	const channel = client.channels.cache.get(process.env.MATCH_HISTORY);
-	channel.send(`**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Map: ** ${util.sanitise(map)}\n**Duration:** ${durationFormatted}\n**Tickets:** ${blueTicketText} Blue - ${redTicketText} Red\n**Winner:** ${winningTeamName} (${reason})`);
+	channel.send(`**${teams.getTeamName(0)}:** ${blueTeamMentions}\n**${teams.getTeamName(1)}:** ${redTeamMentions}\n**Map: ** ${util.sanitise(map)}\n**Duration:** ${durationFormatted}\n**Tickets:** ${blueTicketText} ${teams.getShortTeamName(0)} - ${redTicketText} ${teams.getShortTeamName(1)}\n**Winner:** ${winningTeamName} (${reason})`);
 }

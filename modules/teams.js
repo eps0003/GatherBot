@@ -26,6 +26,16 @@ exports.getTeamName = (team) => {
 	return "Spectator";
 };
 
+exports.getShortTeamName = (team) => {
+	switch (team) {
+		case 0:
+			return "Blue";
+		case 1:
+			return "Red";
+	}
+	return "Spec";
+};
+
 exports.getTeamNum = (member) => {
 	if (blueTeam.some((player) => player.member === member)) {
 		return 0;
@@ -94,11 +104,11 @@ exports.scramble = () => {
 	const redTeam = this.getRedTeam();
 
 	const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
-	channel.send(`**The teams have been scrambled**\n**Blue Team:** ${util.listUsernames(blueTeam)}\n**Red Team:** ${util.listUsernames(redTeam)}`);
+	channel.send(`**The teams have been scrambled**\n**${this.getTeamName(0)}:** ${util.listUsernames(blueTeam)}\n**${this.getTeamName(1)}:** ${util.listUsernames(redTeam)}`);
 
 	console.log("Teams scrambled");
-	console.log(`Blue Team: ${util.listUsernames(blueTeam, false)}`);
-	console.log(`Red Team: ${util.listUsernames(redTeam, false)}`);
+	console.log(`${this.getTeamName(0)}: ${util.listUsernames(blueTeam, false)}`);
+	console.log(`${this.getTeamName(1)}: ${util.listUsernames(redTeam, false)}`);
 };
 
 exports.getPlayers = () => {
@@ -221,15 +231,15 @@ exports.announceTeams = () => {
 	const redTeamMentions = util.listUserMentions(redTeam);
 
 	const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
-	channel.send(`**A Gather match is about to start!**\n**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`);
+	channel.send(`**A Gather match is about to start!**\n**${this.getTeamName(0)}:** ${blueTeamMentions}\n**${this.getTeamName(1)}:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`);
 
 	console.log("Teams set");
-	console.log(`Blue Team: ${util.listUsernames(blueTeam, false)}`);
-	console.log(`Red Team: ${util.listUsernames(redTeam, false)}`);
+	console.log(`${this.getTeamName(0)}: ${util.listUsernames(blueTeam, false)}`);
+	console.log(`${this.getTeamName(1)}: ${util.listUsernames(redTeam, false)}`);
 
 	const players = this.getPlayers();
 	for (const player of players) {
-		player.member.send(`**Your Gather match is about to start!**\n**Blue Team:** ${blueTeamMentions}\n**Red Team:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`).catch(() => {});
+		player.member.send(`**Your Gather match is about to start!**\n**${this.getTeamName(0)}:** ${blueTeamMentions}\n**${this.getTeamName(1)}:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`).catch(() => {});
 	}
 };
 
