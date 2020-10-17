@@ -9,7 +9,7 @@ exports.statusNames = Object.freeze({
 	offline: "offline",
 });
 
-exports.stateNames = ["Intermission", "Warmup", "In Progress", "Game Over"];
+exports.stateNames = ["Intermission", "Build Time", "In Progress", "Game Over"];
 
 exports.plural = (val, text, suffix = "s", trim = 0) => {
 	if (val === 1) {
