@@ -2,6 +2,7 @@ const { client } = require("../index");
 const teams = require("./teams");
 const queue = require("./queue");
 const tcpr = require("./tcpr");
+const stats = require("./stats");
 const util = require("./utilities");
 const format = require("format-duration");
 
@@ -40,6 +41,7 @@ exports.matchEnded = (cause, winner, duration, map, blueTickets, redTickets) => 
 		console.log(`Match ended. ${teamName} won ${reason}!`);
 
 		logMatch(cause, winner, duration, map, blueTickets, redTickets);
+		stats.saveMatch(cause, winner, duration, map, blueTickets, redTickets);
 	} else {
 		channel.send(`**Match ended ${reason}**`);
 		console.log(`Match ended ${reason}`);
