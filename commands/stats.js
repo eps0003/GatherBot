@@ -44,11 +44,14 @@ module.exports = {
 
 function displayStats(message, username) {
 	const data = stats.getStats(username);
-	console.log(data);
 	if (!data) {
-		message.channel.send(`**${username}** has not participated in a Gather match`);
+		message.channel.send(`**${util.sanitise(username)}** has not participated in a Gather match`);
 	} else {
-		const formattedWinrate = Math.floor(data.winrate * 100);
-		message.channel.send(`**${util.sanitise(data.username)}'s stats:** ${data.wins} wins, ${data.losses} ${util.plural(data.losses, "loss", "es")}, ${formattedWinrate}% winrate`);
+		const formattedWinrate = Math.floor(data.winrate * 100).toFixed(2);
+
+		let text = `**${util.sanitise(data.username)}'s stats:**`;
+		text += `\n${data.playcount} ${util.plural(data.playcount, "match", "es")}, ${data.wins} wins, ${data.losses} ${util.plural(data.losses, "loss", "es")}, ${formattedWinrate}% winrate`;
+		text += `\n${data.kills} ${util.plural(data.kills, "kill")} (best: ${data.maxkills}), ${data.deaths} ${util.plural(data.deaths, "death")} (worst: ${data.maxdeaths}), ${data.kdr.toFixed(2)} KDR (best: ${data.bestkdr.toFixed(2)})`;
+		message.channel.send(text);
 	}
 }

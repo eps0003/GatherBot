@@ -28,7 +28,7 @@ exports.endMatch = () => {
 	tcpr.socket.write("getRules().set_bool('gather_end_match', true);\n");
 };
 
-exports.matchEnded = (cause, winner, duration, map, blueTickets, redTickets) => {
+exports.matchEnded = (cause, winner, duration, map, blueTickets, redTickets, playerStats) => {
 	matchIsLive = false;
 
 	//announce winner
@@ -41,7 +41,7 @@ exports.matchEnded = (cause, winner, duration, map, blueTickets, redTickets) => 
 		console.log(`Match ended. ${teamName} won ${reason}!`);
 
 		logMatch(cause, winner, duration, map, blueTickets, redTickets);
-		stats.saveMatch(cause, winner, duration, map, blueTickets, redTickets);
+		stats.saveMatch(cause, winner, duration, map, blueTickets, redTickets, playerStats);
 	} else {
 		channel.send(`**Match ended ${reason}**`);
 		console.log(`Match ended ${reason}`);

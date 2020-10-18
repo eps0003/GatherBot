@@ -63,14 +63,35 @@ exports.connect = () => {
 		if (command === "started") {
 			match.matchStarted();
 		} else if (command === "ended") {
-			const cause = Number(args[0]);
-			const winner = Number(args[1]);
-			const duration = Number(args[2]);
-			const map = args[3];
-			const blueTickets = Number(args[4]);
-			const redTickets = Number(args[5]);
+			const cause = Number(args.shift());
+			const winner = Number(args.shift());
+			const duration = Number(args.shift());
+			const map = args.shift();
+			const blueTickets = Number(args.shift());
+			const redTickets = Number(args.shift());
+			const playerStats = {};
 
-			match.matchEnded(cause, winner, duration, map, blueTickets, redTickets);
+			const blueTeam = teams.getBlueTeam();
+			for (const player of blueTeam) {
+				const username = player.username;
+				playerStats[username] = {
+					kills: Number(args.shift()),
+					deaths: Number(args.shift()),
+					assists: Number(args.shift()),
+				};
+			}
+
+			const redTeam = teams.getRedTeam();
+			for (const player of redTeam) {
+				const username = player.username;
+				playerStats[username] = {
+					kills: Number(args.shift()),
+					deaths: Number(args.shift()),
+					assists: Number(args.shift()),
+				};
+			}
+
+			match.matchEnded(cause, winner, duration, map, blueTickets, redTickets, playerStats);
 		} else if (command === "scramble") {
 			teams.scramble();
 		} else if (command === "status") {
