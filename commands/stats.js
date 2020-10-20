@@ -52,6 +52,7 @@ function displayStats(message, username) {
 		let text = `**${util.sanitise(data.username)}'s stats:**`;
 		text += `\n${data.playcount} ${util.plural(data.playcount, "match", "es")}, ${data.wins} wins, ${data.losses} ${util.plural(data.losses, "loss", "es")}, ${formattedWinrate}% winrate`;
 		text += `\n${data.kills} ${util.plural(data.kills, "kill")} (best: ${data.maxkills}), ${data.deaths} ${util.plural(data.deaths, "death")} (worst: ${data.maxdeaths}), ${data.kdr.toFixed(2)} KDR (best: ${data.bestkdr.toFixed(2)})`;
+		text += `\n${data.substitutions} ${util.plural(data.substitutions, "substitution")}, ${data.desertions} ${util.plural(data.desertions, "desertion")}`;
 		message.channel.send(text);
 	}
 }

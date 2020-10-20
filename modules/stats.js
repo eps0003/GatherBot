@@ -46,13 +46,15 @@ exports.init = () => {
 	const statsQuery = `
 		SELECT
 			username,
-			SUM(team = winner) as wins,
+			SUM(team = winner AND (NOT deserted OR substituted)) as wins,
 			SUM(team != winner) as losses,
-			CAST(SUM(team = winner) AS FLOAT) / COUNT(1) as winrate,
+			CAST(SUM(team = winner AND (NOT deserted OR substituted)) AS FLOAT) / COUNT(1) as winrate,
 			SUM(kills) AS kills,
 			SUM(deaths) AS deaths,
 			CAST(SUM(kills) AS FLOAT) / COALESCE(NULLIF(SUM(deaths), 0), 1) AS kdr,
 			MAX(CAST(kills AS FLOAT) / COALESCE(NULLIF(deaths, 0), 1)) AS bestkdr,
+			SUM(substituted) AS substitutions,
+			SUM(deserted AND NOT substituted) AS desertions,
 			COUNT(1) as playcount,
 			SUM(duration) AS playtime,
 			AVG(kills) AS avgkills,
