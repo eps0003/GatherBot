@@ -95,7 +95,7 @@ client.on("message", async (message) => {
 	}
 
 	//not enough args
-	if (command.args && args.length < command.args.length) {
+	if (command.args && args.length < command.args.length && !command.optionalArgs) {
 		const joinedArgs = command.args.map((arg) => `[${arg}]`).join(" ");
 		message.channel.send(`Invalid command usage: \`${process.env.PREFIX}${commandName} ${joinedArgs}\``);
 		return;

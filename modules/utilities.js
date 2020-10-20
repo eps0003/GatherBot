@@ -20,6 +20,10 @@ exports.plural = (val, text, suffix = "s", trim = 0) => {
 	}
 };
 
+exports.possessive = (text) => {
+	return text + (text.endsWith("s") ? "'" : "'s");
+};
+
 exports.clearRole = (role) => {
 	client.guilds.cache
 		.get(process.env.GUILD)
