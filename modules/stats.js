@@ -72,7 +72,7 @@ exports.init = () => {
 	matchCompleted = sql.prepare("INSERT INTO Matches (duration, map, winner, blue_tickets, red_tickets, win_condition) VALUES (@duration, @map, @winner, @blueTickets, @redTickets, @cause)");
 	addPlayerMatch = sql.prepare("INSERT INTO PlayerMatches VALUES (@matchID, @username, @team, @kills, @deaths, @substituted, @deserted)");
 	getLastID = sql.prepare("SELECT last_insert_rowid() AS 'id'");
-	getLeaderboard = sql.prepare(`${statsQuery} WHERE ${seasonCheck} GROUP by username ORDER BY winrate DESC, wins DESC, username COLLATE NOCASE LIMIT ?`);
+	getLeaderboard = sql.prepare(`${statsQuery} WHERE ${seasonCheck} GROUP by username ORDER BY winrate DESC, wins DESC, kdr DESC, username COLLATE NOCASE LIMIT ?`);
 	getStats = sql.prepare(`${statsQuery} WHERE username LIKE ? AND ${seasonCheck} GROUP by username`);
 
 	this.updateLeaderboardMessage();
