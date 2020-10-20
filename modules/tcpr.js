@@ -71,22 +71,12 @@ exports.connect = () => {
 			const redTickets = Number(args.shift());
 			const playerStats = {};
 
-			const blueTeam = teams.getBlueTeam();
-			for (const player of blueTeam) {
-				const username = player.username;
-				playerStats[username] = {
-					kills: Number(args.shift()),
-					deaths: Number(args.shift()),
-				};
-			}
+			while (args.length) {
+				const username = args.shift();
+				const kills = Number(args.shift());
+				const deaths = Number(args.shift());
 
-			const redTeam = teams.getRedTeam();
-			for (const player of redTeam) {
-				const username = player.username;
-				playerStats[username] = {
-					kills: Number(args.shift()),
-					deaths: Number(args.shift()),
-				};
+				playerStats[username] = { kills, deaths };
 			}
 
 			match.matchEnded(cause, winner, duration, map, blueTickets, redTickets, playerStats);

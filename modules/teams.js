@@ -4,6 +4,7 @@ const util = require("./utilities");
 const match = require("./match");
 const link = require("./link");
 const queue = require("./queue");
+const subs = require("./substitutions");
 
 var blueTeam = [];
 var redTeam = [];
@@ -36,12 +37,12 @@ exports.getShortTeamName = (team) => {
 	return "Spec";
 };
 
-exports.getTeamNum = (member) => {
-	if (blueTeam.some((player) => player.member === member)) {
+exports.getTeamNum = (any) => {
+	if (blueTeam.some((player) => player.member === any || player.username === any)) {
 		return 0;
 	}
 
-	if (redTeam.some((player) => player.member === member)) {
+	if (redTeam.some((player) => player.member === any || player.username === any)) {
 		return 1;
 	}
 
@@ -141,8 +142,8 @@ exports.swapPlayer = (currentMember, newMember) => {
 		return;
 	}
 
-	link.getKAGUsername(newMember, (username) => {
-		if (!username) {
+	link.getKAGUsername(newMember, (newUsername) => {
+		if (!newUsername) {
 			channel.send(`**${newName}** is yet to link their Discord account to their KAG account`);
 			return;
 		}
@@ -155,7 +156,7 @@ exports.swapPlayer = (currentMember, newMember) => {
 		for (const i in players) {
 			const player = players[i];
 			if (player.member === currentMember) {
-				players[i] = { member: newMember, username };
+				players[i] = { member: newMember, username: newUsername };
 				break;
 			}
 		}
@@ -179,6 +180,12 @@ exports.swapPlayer = (currentMember, newMember) => {
 
 		//dm user
 		currentMember.send("You have been **subbed out** of your Gather match").catch(() => {});
+
+		//manage substitution/desertion
+		link.getKAGUsername(currentMember, (currentUsername) => {
+			subs.addSubstitution(newUsername, team);
+			subs.addDesertion(currentUsername, team);
+		});
 	});
 };
 

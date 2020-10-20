@@ -4,6 +4,7 @@ const queue = require("./queue");
 const tcpr = require("./tcpr");
 const stats = require("./stats");
 const util = require("./utilities");
+const subs = require("./substitutions");
 const format = require("format-duration");
 
 const matchEndReasons = ["because the server went offline", "prematurely by an admin", "by capturing the enemy flags", "by killing off the enemy"];
@@ -48,6 +49,7 @@ exports.matchEnded = (cause, winner, duration, map, blueTickets, redTickets, pla
 	}
 
 	teams.clear();
+	subs.clear();
 	util.updatePresence();
 
 	//queue might have become full while match was in progress

@@ -2,7 +2,8 @@ const SQLite = require("better-sqlite3");
 const sql = new SQLite('./stats.sqlite');
 const { client } = require("../index");
 const teams = require("./teams");
-const { table, getBorderCharacters } = require("table");
+const subs = require("./substitutions");
+const { table } = require("table");
 
 var matchCompleted;
 var addPlayerMatch;
@@ -33,6 +34,8 @@ exports.init = () => {
 			team INTEGER NOT NULL,
 			kills INTEGER,
 			deaths INTEGER,
+			substituted INTEGER NOT NULL DEFAULT 0,
+			deserted INTEGER NOT NULL DEFAULT 0,
 			PRIMARY KEY (match_id, username),
 			FOREIGN KEY(match_id) REFERENCES Matches(match_id)
 		);
@@ -65,7 +68,7 @@ exports.init = () => {
 	const seasonCheck = process.env.SEASON_START ? `date >= DATETIME('${process.env.SEASON_START}')` : "1";
 
 	matchCompleted = sql.prepare("INSERT INTO Matches (duration, map, winner, blue_tickets, red_tickets, win_condition) VALUES (@duration, @map, @winner, @blueTickets, @redTickets, @cause)");
-	addPlayerMatch = sql.prepare("INSERT INTO PlayerMatches VALUES (@matchID, @username, @team, @kills, @deaths)");
+	addPlayerMatch = sql.prepare("INSERT INTO PlayerMatches VALUES (@matchID, @username, @team, @kills, @deaths, @substituted, @deserted)");
 	getLastID = sql.prepare("SELECT last_insert_rowid() AS 'id'");
 	getLeaderboard = sql.prepare(`${statsQuery} WHERE ${seasonCheck} GROUP by username ORDER BY winrate DESC, wins DESC LIMIT ?`);
 	getStats = sql.prepare(`${statsQuery} WHERE username LIKE ? AND ${seasonCheck} GROUP by username`);
@@ -86,14 +89,19 @@ exports.saveMatch = (cause, winner, duration, map, blueTickets, redTickets, play
 
 	const matchID = getLastID.get().id;
 
+	winner = 0;
 	const winningTeam = teams.getTeam(winner);
 	for (const player of winningTeam) {
 		addPlayerMatch.run({
 			username: player.username,
 			matchID,
 			team: winner,
-			...playerStats[player.username]
+			substituted: subs.getSubbedPlayer(player.username) ? 1 : 0,
+			deserted: 0,
+			...playerStats[player.username],
 		});
+
+		delete playerStats[player.username];
 	}
 
 	const loser = (winner + 1) % 2;
@@ -103,7 +111,24 @@ exports.saveMatch = (cause, winner, duration, map, blueTickets, redTickets, play
 			username: player.username,
 			matchID,
 			team: loser,
-			...playerStats[player.username]
+			substituted: subs.getSubbedPlayer(player.username) ? 1 : 0,
+			deserted: 0,
+			...playerStats[player.username],
+		});
+
+		delete playerStats[player.username];
+	}
+
+	//these players deserted the match or were subbed in and out
+	const usernames = Object.keys(playerStats);
+	for (const username of usernames) {
+		addPlayerMatch.run({
+			username,
+			matchID,
+			team: subs.getDesertedPlayer(username).team,
+			substituted: subs.getSubbedPlayer(username) ? 1 : 0,
+			deserted: 1,
+			...playerStats[username],
 		});
 	}
 
