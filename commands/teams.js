@@ -11,6 +11,6 @@ module.exports = {
 	execute(message, args) {
 		const blueTeam = util.listUsernames(teams.getBlueTeam());
 		const redTeam = util.listUsernames(teams.getRedTeam());
-		message.channel.send(`**${this.getTeamName(0)}:** ${blueTeam}\n**${this.getTeamName(1)}:** ${redTeam}`);
+		message.channel.send(`**${teams.getTeamName(0)}:** ${blueTeam}\n**${teams.getTeamName(1)}:** ${redTeam}`);
 	},
 };
