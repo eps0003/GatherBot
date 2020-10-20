@@ -77,7 +77,6 @@ exports.connect = () => {
 				playerStats[username] = {
 					kills: Number(args.shift()),
 					deaths: Number(args.shift()),
-					assists: Number(args.shift()),
 				};
 			}
 
@@ -87,7 +86,6 @@ exports.connect = () => {
 				playerStats[username] = {
 					kills: Number(args.shift()),
 					deaths: Number(args.shift()),
-					assists: Number(args.shift()),
 				};
 			}
 

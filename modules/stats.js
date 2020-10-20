@@ -33,7 +33,6 @@ exports.init = () => {
 			team INTEGER NOT NULL,
 			kills INTEGER,
 			deaths INTEGER,
-			assists INTEGER,
 			PRIMARY KEY (match_id, username),
 			FOREIGN KEY(match_id) REFERENCES Matches(match_id)
 		);
@@ -49,20 +48,16 @@ exports.init = () => {
 			CAST(SUM(team = winner) AS FLOAT) / COUNT(1) as winrate,
 			SUM(kills) AS kills,
 			SUM(deaths) AS deaths,
-			SUM(assists) AS assists,
 			CAST(SUM(kills) AS FLOAT) / COALESCE(NULLIF(SUM(deaths), 0), 1) AS kdr,
 			MAX(CAST(kills AS FLOAT) / COALESCE(NULLIF(deaths, 0), 1)) AS bestkdr,
 			COUNT(1) as playcount,
 			SUM(duration) AS playtime,
 			AVG(kills) AS avgkills,
 			AVG(deaths) AS avgdeaths,
-			AVG(assists) AS avgassists,
 			MIN(kills) AS minkills,
 			MIN(deaths) AS mindeaths,
-			MIN(assists) AS minassists,
 			MAX(kills) AS maxkills,
-			MAX(deaths) AS maxdeaths,
-			MAX(assists) AS maxassists
+			MAX(deaths) AS maxdeaths
 		FROM PlayerMatches
 		NATURAL JOIN Matches
 	`;
@@ -70,7 +65,7 @@ exports.init = () => {
 	const seasonCheck = process.env.SEASON_START ? `date >= DATETIME('${process.env.SEASON_START}')` : "1";
 
 	matchCompleted = sql.prepare("INSERT INTO Matches (duration, map, winner, blue_tickets, red_tickets, win_condition) VALUES (@duration, @map, @winner, @blueTickets, @redTickets, @cause)");
-	addPlayerMatch = sql.prepare("INSERT INTO PlayerMatches VALUES (@matchID, @username, @team, @kills, @deaths, @assists)");
+	addPlayerMatch = sql.prepare("INSERT INTO PlayerMatches VALUES (@matchID, @username, @team, @kills, @deaths)");
 	getLastID = sql.prepare("SELECT last_insert_rowid() AS 'id'");
 	getLeaderboard = sql.prepare(`${statsQuery} WHERE ${seasonCheck} GROUP by username ORDER BY winrate DESC, wins DESC LIMIT ?`);
 	getStats = sql.prepare(`${statsQuery} WHERE username LIKE ? AND ${seasonCheck} GROUP by username`);
