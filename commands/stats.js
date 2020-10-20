@@ -47,7 +47,7 @@ function displayStats(message, username) {
 	if (!data) {
 		message.channel.send(`**${util.sanitise(username)}** has not participated in a Gather match`);
 	} else {
-		const formattedWinrate = Math.floor(data.winrate * 100).toFixed(2);
+		const formattedWinrate = (data.winrate * 100).toFixed(2);
 
 		let text = `**${util.sanitise(data.username)}'s stats:**`;
 		text += `\n${data.playcount} ${util.plural(data.playcount, "match", "es")}, ${data.wins} wins, ${data.losses} ${util.plural(data.losses, "loss", "es")}, ${formattedWinrate}% winrate`;

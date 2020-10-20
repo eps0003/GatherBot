@@ -140,7 +140,7 @@ exports.getLeaderboardText = (max = 20) => {
 
 	const leaderboard = this.getLeaderboard(max);
 	for (const x of leaderboard) {
-		const formattedWinrate = Math.floor(x.winrate * 100).toFixed(2);
+		const formattedWinrate = (x.winrate * 100).toFixed(2);
 		data.push([x.username, x.playcount, x.wins, x.losses, `${formattedWinrate}%`, x.kdr.toFixed(2)]);
 	}
 
