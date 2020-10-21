@@ -1,105 +1,37 @@
 const SQLite = require("better-sqlite3");
-const sql = new SQLite('./stats.sqlite');
+const sql = new SQLite("./stats.sqlite");
 const { client } = require("../index");
 const teams = require("./teams");
 const subs = require("./substitutions");
 const { table } = require("table");
 
-var matchCompleted;
+var addMatch;
 var addPlayerMatch;
 var getLastID;
 var getLeaderboard;
 var getStats;
 
 exports.init = () => {
-	//matches table
-	sql.prepare(`
-		CREATE TABLE IF NOT EXISTS Matches (
-			match_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-			date TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			duration INTEGER,
-			map TEXT,
-			winner INTEGER,
-			blue_tickets INTEGER,
-			red_tickets INTEGER,
-			win_condition INTEGER
-		);
-	`).run();
-
-	//player matches table
-	sql.prepare(`
-		CREATE TABLE IF NOT EXISTS PlayerMatches (
-			match_id INTEGER NOT NULL,
-			username TEXT NOT NULL,
-			team INTEGER NOT NULL,
-			kills INTEGER,
-			deaths INTEGER,
-			substituted INTEGER NOT NULL DEFAULT 0,
-			deserted INTEGER NOT NULL DEFAULT 0,
-			PRIMARY KEY (match_id, username),
-			FOREIGN KEY(match_id) REFERENCES Matches(match_id)
-		);
-	`).run();
-
-	sql.function("SQRT", (x) => Math.sqrt(x));
-
 	sql.pragma("synchronous = 1");
 
-	const wins = "SUM(team = winner AND (NOT deserted OR substituted))";
-	const losses = "SUM(team != winner)";
-	const winrate = `(CAST(${wins} AS FLOAT) / COUNT(1))`;
-	const kdr = "(CAST(SUM(kills) AS FLOAT) / IFNULL(NULLIF(SUM(deaths), 0), 1))";
-
-	const n = `(${wins} + ${losses})`;
-	const score = `(((${wins} + 1.9208) / ${n} - 1.96 * SQRT((${wins} * ${losses}) / ${n} + 0.9604) / ${n}) / (1 + 3.8416 / ${n}) * 1000)`;
-
-	const statsQuery = `
-		SELECT
-			username,
-			${wins} as wins,
-			${losses} as losses,
-			${winrate} as winrate,
-			SUM(kills) AS kills,
-			SUM(deaths) AS deaths,
-			${kdr} AS kdr,
-			MAX(CAST(kills AS FLOAT) / IFNULL(NULLIF(deaths, 0), 1)) AS bestkdr,
-			SUM(substituted) AS substitutions,
-			SUM(deserted AND NOT substituted) AS desertions,
-			COUNT(1) as playcount,
-			SUM(duration) AS playtime,
-			AVG(kills) AS avgkills,
-			AVG(deaths) AS avgdeaths,
-			MIN(kills) AS minkills,
-			MIN(deaths) AS mindeaths,
-			MAX(kills) AS maxkills,
-			MAX(deaths) AS maxdeaths,
-			${score} AS score,
-			RANK() OVER (ORDER BY ${score} DESC, ${winrate} DESC, ${wins} DESC, ${kdr} DESC, username COLLATE NOCASE) rank
-		FROM PlayerMatches
-		NATURAL JOIN Matches
-	`;
-
-	const seasonCheck = process.env.SEASON_START ? `date >= DATETIME('${process.env.SEASON_START}')` : "1";
-
-	matchCompleted = sql.prepare("INSERT INTO Matches (duration, map, winner, blue_tickets, red_tickets, win_condition) VALUES (@duration, @map, @winner, @blueTickets, @redTickets, @cause)");
-	addPlayerMatch = sql.prepare("INSERT INTO PlayerMatches VALUES (@matchID, @username, @team, @kills, @deaths, @substituted, @deserted)");
-	getLastID = sql.prepare("SELECT last_insert_rowid() AS 'id'");
-	getLeaderboard = sql.prepare(`${statsQuery} WHERE ${seasonCheck} GROUP by username ORDER BY rank LIMIT ?`);
-	getStats = sql.prepare(`${statsQuery} WHERE username LIKE ? AND ${seasonCheck} GROUP by username`);
+	createTables();
+	registerFunctions();
+	prepareStatements();
 
 	this.updateLeaderboardMessage();
 };
 
 exports.getLeaderboard = (max = 20) => getLeaderboard.all(max);
 
-exports.getStats = (username) =>  getStats.get(username);
+exports.getStats = (username) => getStats.get(username);
 
 exports.saveMatch = (cause, winner, duration, map, blueTickets, redTickets, playerStats) => {
-	matchCompleted.run({ duration, map, winner, blueTickets, redTickets, cause });
+	//add match to database
+	addMatch.run({ duration, map, winner, blueTickets, redTickets, cause });
 
 	const matchID = getLastID.get().id;
 
-	winner = 0;
+	//add players of winning team to database
 	const winningTeam = teams.getTeam(winner);
 	for (const player of winningTeam) {
 		addPlayerMatch.run({
@@ -114,6 +46,7 @@ exports.saveMatch = (cause, winner, duration, map, blueTickets, redTickets, play
 		delete playerStats[player.username];
 	}
 
+	//add players of losing team to database
 	const loser = (winner + 1) % 2;
 	const losingTeam = teams.getTeam(loser);
 	for (const player of losingTeam) {
@@ -129,6 +62,7 @@ exports.saveMatch = (cause, winner, duration, map, blueTickets, redTickets, play
 		delete playerStats[player.username];
 	}
 
+	//add remaining players to database
 	//these players deserted the match or were subbed in and out
 	const usernames = Object.keys(playerStats);
 	for (const username of usernames) {
@@ -145,18 +79,17 @@ exports.saveMatch = (cause, winner, duration, map, blueTickets, redTickets, play
 	this.updateLeaderboardMessage();
 };
 
-exports.getLeaderboardText = (max = 200) => {
-	const data = [["", "[Username]", "[Matches]", " [Wins] ", "[Losses]", "[Win %]", "[KDR]", "[Score]"]];
+exports.getLeaderboardText = (max = 20) => {
+	const data = [["", "[Username]", "[Matches]", " [Wins] ", "[Losses]", "[Win %]", "[Score]"]];
 
 	const leaderboard = this.getLeaderboard(max);
 	for (const x of leaderboard) {
-		const formattedWinrate = (x.winrate * 100).toFixed(2);
-		data.push([x.rank, x.username, x.playcount, x.wins, x.losses, `${formattedWinrate}%`, x.kdr.toFixed(2), Math.floor(x.score)]);
+		data.push([x.rank, x.username, x.playcount, x.wins, x.losses, `${x.winrate.toFixed(2)}%`, Math.floor(x.score)]);
 	}
 
 	const config = {
 		columns: {
-			0: { alignment: "right", width: max.toString().length },
+			0: { alignment: "right" },
 			1: { alignment: "center", width: 20 },
 			2: { alignment: "right" },
 			3: { alignment: "right" },
@@ -185,9 +118,130 @@ exports.updateLeaderboardMessage = () => {
 	}
 
 	//fetch message
-	channel.messages.fetch(process.env.LEADERBOARD_MESSAGE).then((message) => {
-		message.edit(this.getLeaderboardText());
-	}).catch((err) => {
-		console.warn("Unable to find leaderboard message");
-	});
+	channel.messages
+		.fetch(process.env.LEADERBOARD_MESSAGE)
+		.then((message) => message.edit(this.getLeaderboardText()))
+		.catch((err) => console.warn("Unable to find leaderboard message"));
 };
+
+function createTables() {
+	const matches = sql.prepare(`
+		CREATE TABLE IF NOT EXISTS Matches (
+			match_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+			date TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			duration INTEGER,
+			map TEXT,
+			winner INTEGER,
+			blue_tickets INTEGER,
+			red_tickets INTEGER,
+			win_condition INTEGER
+		);
+	`);
+
+	const playerMatches = sql.prepare(`
+		CREATE TABLE IF NOT EXISTS PlayerMatches (
+			match_id INTEGER NOT NULL,
+			username TEXT NOT NULL,
+			team INTEGER NOT NULL,
+			kills INTEGER,
+			deaths INTEGER,
+			substituted INTEGER NOT NULL DEFAULT 0,
+			deserted INTEGER NOT NULL DEFAULT 0,
+			PRIMARY KEY (match_id, username),
+			FOREIGN KEY(match_id) REFERENCES Matches(match_id)
+		);
+	`);
+
+	matches.run();
+	playerMatches.run();
+}
+
+function registerFunctions() {
+	sql.function("SQRT", (x) => Math.sqrt(x));
+	sql.function("PERC", (a, b) => a / Math.max(b, 1));
+	sql.function("CI", (pos, n) => {
+		//https://gist.github.com/honza/5050540
+		const z = 1.96;
+		const phat = (1 * pos) / n;
+		return (phat + (z * z) / (2 * n) - z * Math.sqrt((phat * (1 - phat) + (z * z) / (4 * n)) / n)) / (1 + (z * z) / n);
+	});
+}
+
+function prepareStatements() {
+	const wins = "SUM(team = winner AND (NOT deserted OR substituted))";
+	const losses = "SUM(team != winner)";
+	const winrate = `PERC(${wins}, COUNT(1)) * 100`;
+	const kdr = "PERC(SUM(kills), SUM(deaths))";
+	const score = `CI(${wins}, ${wins} + ${losses}) * 1000`;
+	const seasonCheck = process.env.SEASON_START ? `date >= DATETIME('${process.env.SEASON_START}')` : "1";
+	const order = `${score} DESC, ${winrate} DESC, ${wins} DESC, ${kdr} DESC, username COLLATE NOCASE`;
+	const statsQuery = `
+		SELECT
+			username,
+			${wins} as wins,
+			${losses} as losses,
+			${winrate} as winrate,
+			SUM(kills) AS kills,
+			SUM(deaths) AS deaths,
+			${kdr} AS kdr,
+			MAX(PERC(kills, deaths)) AS bestkdr,
+			SUM(substituted) AS substitutions,
+			SUM(deserted AND NOT substituted) AS desertions,
+			COUNT(1) as playcount,
+			SUM(duration) AS playtime,
+			AVG(kills) AS avgkills,
+			AVG(deaths) AS avgdeaths,
+			MIN(kills) AS minkills,
+			MIN(deaths) AS mindeaths,
+			MAX(kills) AS maxkills,
+			MAX(deaths) AS maxdeaths,
+			${score} AS score,
+			rank,
+			players
+		FROM PlayerMatches
+		NATURAL JOIN Matches
+		NATURAL JOIN (SELECT COUNT(DISTINCT username) AS players FROM PlayerMatches)
+		NATURAL JOIN (
+			SELECT username, RANK() OVER (ORDER BY ${order}) rank
+			FROM PlayerMatches
+			NATURAL JOIN Matches
+			GROUP by username
+		)
+	`;
+
+	addMatch = sql.prepare(`
+		INSERT INTO Matches (duration, map, winner, blue_tickets, red_tickets, win_condition)
+		VALUES (@duration, @map, @winner, @blueTickets, @redTickets, @cause)
+	`);
+
+	addPlayerMatch = sql.prepare(`
+		INSERT INTO PlayerMatches
+		VALUES (@matchID, @username, @team, @kills, @deaths, @substituted, @deserted)`);
+
+	getLastID = sql.prepare(`
+		SELECT last_insert_rowid() AS 'id'
+	`);
+
+	getLeaderboard = sql.prepare(`
+		${statsQuery}
+		WHERE ${seasonCheck}
+		GROUP by username
+		ORDER BY ${order}
+		LIMIT ?
+	`);
+
+	getStats = sql.prepare(`
+		${statsQuery}
+		WHERE ${seasonCheck} AND username LIKE ?
+		GROUP by username
+	`);
+
+	getGatherStats = sql.prepare(`
+		SELECT
+			COUNT(1) AS total_matches,
+			(SELECT COUNT(1) AS season_matches FROM Matches WHERE ${seasonCheck}) AS season_matches,
+			MAX(duration) AS longest_match,
+			MIN(duration) AS shortest_match
+		FROM Matches;
+	`);
+}
