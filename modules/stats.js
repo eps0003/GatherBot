@@ -41,18 +41,28 @@ exports.init = () => {
 		);
 	`).run();
 
+	sql.function("SQRT", (x) => Math.sqrt(x));
+
 	sql.pragma("synchronous = 1");
+
+	const wins = "SUM(team = winner AND (NOT deserted OR substituted))";
+	const losses = "SUM(team != winner)";
+	const winrate = `(CAST(${wins} AS FLOAT) / COUNT(1))`;
+	const kdr = "(CAST(SUM(kills) AS FLOAT) / IFNULL(NULLIF(SUM(deaths), 0), 1))";
+
+	const n = `(${wins} + ${losses})`;
+	const score = `(((${wins} + 1.9208) / ${n} - 1.96 * SQRT((${wins} * ${losses}) / ${n} + 0.9604) / ${n}) / (1 + 3.8416 / ${n}) * 1000)`;
 
 	const statsQuery = `
 		SELECT
 			username,
-			SUM(team = winner AND (NOT deserted OR substituted)) as wins,
-			SUM(team != winner) as losses,
-			CAST(SUM(team = winner AND (NOT deserted OR substituted)) AS FLOAT) / COUNT(1) as winrate,
+			${wins} as wins,
+			${losses} as losses,
+			${winrate} as winrate,
 			SUM(kills) AS kills,
 			SUM(deaths) AS deaths,
-			CAST(SUM(kills) AS FLOAT) / COALESCE(NULLIF(SUM(deaths), 0), 1) AS kdr,
-			MAX(CAST(kills AS FLOAT) / COALESCE(NULLIF(deaths, 0), 1)) AS bestkdr,
+			${kdr} AS kdr,
+			MAX(CAST(kills AS FLOAT) / IFNULL(NULLIF(deaths, 0), 1)) AS bestkdr,
 			SUM(substituted) AS substitutions,
 			SUM(deserted AND NOT substituted) AS desertions,
 			COUNT(1) as playcount,
@@ -62,7 +72,9 @@ exports.init = () => {
 			MIN(kills) AS minkills,
 			MIN(deaths) AS mindeaths,
 			MAX(kills) AS maxkills,
-			MAX(deaths) AS maxdeaths
+			MAX(deaths) AS maxdeaths,
+			${score} AS score,
+			RANK() OVER (ORDER BY ${score} DESC, ${winrate} DESC, ${wins} DESC, ${kdr} DESC, username COLLATE NOCASE) rank
 		FROM PlayerMatches
 		NATURAL JOIN Matches
 	`;
@@ -72,19 +84,15 @@ exports.init = () => {
 	matchCompleted = sql.prepare("INSERT INTO Matches (duration, map, winner, blue_tickets, red_tickets, win_condition) VALUES (@duration, @map, @winner, @blueTickets, @redTickets, @cause)");
 	addPlayerMatch = sql.prepare("INSERT INTO PlayerMatches VALUES (@matchID, @username, @team, @kills, @deaths, @substituted, @deserted)");
 	getLastID = sql.prepare("SELECT last_insert_rowid() AS 'id'");
-	getLeaderboard = sql.prepare(`${statsQuery} WHERE ${seasonCheck} GROUP by username ORDER BY winrate DESC, wins DESC, kdr DESC, username COLLATE NOCASE LIMIT ?`);
+	getLeaderboard = sql.prepare(`${statsQuery} WHERE ${seasonCheck} GROUP by username ORDER BY rank LIMIT ?`);
 	getStats = sql.prepare(`${statsQuery} WHERE username LIKE ? AND ${seasonCheck} GROUP by username`);
 
 	this.updateLeaderboardMessage();
 };
 
-exports.getLeaderboard = (max = 20) => {
-	return getLeaderboard.all(max);
-};
+exports.getLeaderboard = (max = 20) => getLeaderboard.all(max);
 
-exports.getStats = (username) => {
-	return getStats.get(username);
-};
+exports.getStats = (username) =>  getStats.get(username);
 
 exports.saveMatch = (cause, winner, duration, map, blueTickets, redTickets, playerStats) => {
 	matchCompleted.run({ duration, map, winner, blueTickets, redTickets, cause });
@@ -137,23 +145,25 @@ exports.saveMatch = (cause, winner, duration, map, blueTickets, redTickets, play
 	this.updateLeaderboardMessage();
 };
 
-exports.getLeaderboardText = (max = 20) => {
-	const data = [["[Username]", "[Matches]", " [Wins] ", "[Losses]", "[Win %]", "[KDR]"]];
+exports.getLeaderboardText = (max = 200) => {
+	const data = [["", "[Username]", "[Matches]", " [Wins] ", "[Losses]", "[Win %]", "[KDR]", "[Score]"]];
 
 	const leaderboard = this.getLeaderboard(max);
 	for (const x of leaderboard) {
 		const formattedWinrate = (x.winrate * 100).toFixed(2);
-		data.push([x.username, x.playcount, x.wins, x.losses, `${formattedWinrate}%`, x.kdr.toFixed(2)]);
+		data.push([x.rank, x.username, x.playcount, x.wins, x.losses, `${formattedWinrate}%`, x.kdr.toFixed(2), Math.floor(x.score)]);
 	}
 
 	const config = {
 		columns: {
-			0: { width: 20, alignment: "center" },
-			1: { alignment: "right" },
+			0: { alignment: "right", width: max.toString().length },
+			1: { alignment: "center", width: 20 },
 			2: { alignment: "right" },
 			3: { alignment: "right" },
 			4: { alignment: "right" },
 			5: { alignment: "right" },
+			6: { alignment: "right" },
+			7: { alignment: "right" },
 		},
 		drawHorizontalLine: (index, size) => {
 			return index === 0 || index === 1 || index === size;
