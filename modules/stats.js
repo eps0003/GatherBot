@@ -89,7 +89,7 @@ exports.getLeaderboardText = (max = 20) => {
 
 	const config = {
 		columns: {
-			0: { alignment: "right" },
+			0: { alignment: "right", width: Math.max(1, leaderboard.length.toString().length) },
 			1: { alignment: "center", width: 20 },
 			2: { alignment: "right" },
 			3: { alignment: "right" },
@@ -121,7 +121,7 @@ exports.updateLeaderboardMessage = () => {
 	channel.messages
 		.fetch(process.env.LEADERBOARD_MESSAGE)
 		.then((message) => message.edit(this.getLeaderboardText()))
-		.catch((err) => console.warn("Unable to find leaderboard message"));
+		.catch((err) => console.warn(`Unable to update leaderboard: ${err.message}`));
 };
 
 function createTables() {
