@@ -81,3 +81,7 @@ exports.listUsernames = (players, sanitise = true) => {
 exports.listUserMentions = (players) => {
 	return players.map((player) => player.member.toString()).join(" ");
 };
+
+exports.canQueueWithStatus = (status) => {
+	return !["idle", "offline"].includes(status);
+};

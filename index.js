@@ -35,12 +35,10 @@ client.on("ready", () => {
 });
 
 client.on("presenceUpdate", (oldPresence, newPresence) => {
-	if (newPresence.status !== "online") {
-		if (queue.has(newPresence.member)) {
-			const statusName = util.statusNames[newPresence.status];
-			queue.remove(newPresence.member, ` because they went **${statusName}** on Discord`);
-			newPresence.member.send(`You have been **removed** from the Gather queue because you went **${statusName}** on Discord`).catch(() => {});
-		}
+	if (!util.canQueueWithStatus(newPresence.status) && queue.has(newPresence.member)) {
+		const statusName = util.statusNames[newPresence.status];
+		queue.remove(newPresence.member, ` because they went **${statusName}** on Discord`);
+		newPresence.member.send(`You have been **removed** from the Gather queue because you went **${statusName}** on Discord`).catch(() => {});
 	}
 });
 
