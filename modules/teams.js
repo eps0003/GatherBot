@@ -238,7 +238,7 @@ exports.announceTeams = () => {
 	const redTeamMentions = util.listUserMentions(redTeam);
 
 	const channel = client.channels.cache.get(process.env.GATHER_GENERAL);
-	channel.send(`**A Gather match is about to start!**\n**${this.getTeamName(0)}:** ${blueTeamMentions}\n**${this.getTeamName(1)}:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`);
+	channel.send(`**A Gather match is about to start!**\n**${this.getTeamName(0)}:** ${blueTeamMentions}\n**${this.getTeamName(1)}:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/${process.env.SERVER_PASSWORD}>`);
 
 	console.log("Teams set");
 	console.log(`${this.getTeamName(0)}: ${util.listUsernames(blueTeam, false)}`);
