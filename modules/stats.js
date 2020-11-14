@@ -120,7 +120,7 @@ exports.updateLeaderboardMessage = () => {
 	//fetch message
 	channel.messages
 		.fetch(process.env.LEADERBOARD_MESSAGE)
-		.then((message) => message.edit(this.getLeaderboardText()))
+		.then((message) => message.edit(this.getLeaderboardText(18)))
 		.catch((err) => console.warn(`Unable to update leaderboard: ${err.message}`));
 };
 
