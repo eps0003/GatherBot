@@ -69,17 +69,8 @@ exports.connect = () => {
 			const map = args.shift();
 			const blueTickets = Number(args.shift());
 			const redTickets = Number(args.shift());
-			const playerStats = {};
 
-			while (args.length) {
-				const username = args.shift();
-				const kills = Number(args.shift());
-				const deaths = Number(args.shift());
-
-				playerStats[username] = { kills, deaths };
-			}
-
-			match.matchEnded(cause, winner, duration, map, blueTickets, redTickets, playerStats);
+			match.matchEnded(cause, winner, duration, map, blueTickets, redTickets);
 		} else if (command === "scramble") {
 			teams.scramble();
 		} else if (command === "status") {

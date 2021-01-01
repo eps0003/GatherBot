@@ -2,7 +2,6 @@ const { client } = require("../index");
 const teams = require("./teams");
 const queue = require("./queue");
 const tcpr = require("./tcpr");
-const stats = require("./stats");
 const util = require("./utilities");
 const subs = require("./substitutions");
 const format = require("format-duration");
@@ -29,7 +28,7 @@ exports.endMatch = () => {
 	tcpr.socket.write("getRules().set_bool('gather_end_match', true);\n");
 };
 
-exports.matchEnded = (cause, winner, duration, map, blueTickets, redTickets, playerStats) => {
+exports.matchEnded = (cause, winner, duration, map, blueTickets, redTickets) => {
 	matchIsLive = false;
 
 	//announce winner
@@ -42,7 +41,6 @@ exports.matchEnded = (cause, winner, duration, map, blueTickets, redTickets, pla
 		console.log(`Match ended. ${teamName} won ${reason}!`);
 
 		logMatch(cause, winner, duration, map, blueTickets, redTickets);
-		stats.saveMatch(cause, winner, duration, map, blueTickets, redTickets, playerStats);
 	} else {
 		channel.send(`**Match ended ${reason}**`);
 		console.log(`Match ended ${reason}`);
