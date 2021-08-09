@@ -3,8 +3,21 @@ require("dotenv").config();
 
 const fs = require("fs");
 const Discord = require("discord.js");
-const client = new Discord.Client();
-client.commands = new Discord.Collection();
+const { Client, Collection, Intents } = Discord;
+
+const client = new Client({
+	intents: [
+		//
+		Intents.FLAGS.DIRECT_MESSAGES,
+		Intents.FLAGS.GUILDS,
+		Intents.FLAGS.GUILD_MEMBERS,
+		Intents.FLAGS.GUILD_MESSAGES,
+		Intents.FLAGS.GUILD_PRESENCES,
+	],
+});
+
+client.commands = new Collection();
+
 exports.Discord = Discord;
 exports.client = client;
 
@@ -50,7 +63,7 @@ client.on("guildMemberRemove", (member) => {
 	}
 });
 
-client.on("message", async (message) => {
+client.on("messageCreate", async (message) => {
 	const wrongGuild = message.guild && message.guild.id !== process.env.GUILD;
 	const botMessage = message.author.bot;
 	const wrongPrefix = !message.content.startsWith(process.env.PREFIX);
@@ -66,7 +79,7 @@ client.on("message", async (message) => {
 	if (!command) return;
 
 	//guild only command
-	if (command.guildOnly && message.channel.type === "dm") return;
+	if (command.guildOnly && (message.channel.type === "DM" || message.channel.type === "GROUP_DM")) return;
 
 	//not sent in #gather-general
 	//some commands can be sent in either #gather-general or through dm
