@@ -244,9 +244,11 @@ exports.announceTeams = () => {
 	console.log(`${this.getTeamName(0)}: ${util.listUsernames(blueTeam, false)}`);
 	console.log(`${this.getTeamName(1)}: ${util.listUsernames(redTeam, false)}`);
 
-	const players = this.getPlayers();
-	for (const player of players) {
-		player.member.send(`**Your Gather match is about to start!**\n**${this.getTeamName(0)}:** ${blueTeamMentions}\n**${this.getTeamName(1)}:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`).catch(() => {});
+	if (["true", "yes", "1"].includes(process.env.SEND_MATCH_DM.toLowerCase())) {
+		const players = this.getPlayers();
+		for (const player of players) {
+			player.member.send(`**Your Gather match is about to start!**\n**${this.getTeamName(0)}:** ${blueTeamMentions}\n**${this.getTeamName(1)}:** ${redTeamMentions}\n**Address:** <kag://${tcpr.getAddress()}/>`).catch(() => {});
+		}
 	}
 };
 
