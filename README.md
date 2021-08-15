@@ -76,9 +76,9 @@ Gather is now ready to go!
 
 ## Acknowledgements
 Thanks to the following people for helping Gather reach the stage it's currently in:
-- **[Cameron](https://forum.thd.vg/members/6469/)** - created and hosted the [original version of Gather](https://github.com/CameronTenTen/discordBot)
-- **[buildfast115](https://forum.thd.vg/members/13758/)** & **[Waxtor](https://forum.thd.vg/members/18305/)** - providing a server to host this version of Gather
-- **[OCE community](https://discord.com/invite/5ukqMU7)** - coming together to play Gather every evening
+- **[Cameron](https://forum.thd.vg/members/6469/)** - created and hosted the [previous version of Gather](https://github.com/CameronTenTen/discordBot)
+- **[buildfast115](https://forum.thd.vg/members/13758/)**, **[Waxtor](https://forum.thd.vg/members/18305/)** & **[SomeoneWeird](https://forum.thd.vg/members/17242/)** - providing a server to host this version of Gather
+- **OCE community** - coming together to play Gather every evening
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details
