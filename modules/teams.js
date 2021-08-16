@@ -61,8 +61,8 @@ exports.setBlueTeam = (players) => {
 	blueTeam = players;
 
 	for (const player of players) {
-		player.member.roles.remove(process.env.RED_TEAM_ROLE);
-		player.member.roles.add(process.env.BLUE_TEAM_ROLE);
+		player.member.roles.remove(process.env.RED_TEAM_ROLE).catch(() => {});
+		player.member.roles.add(process.env.BLUE_TEAM_ROLE).catch(() => {});
 	}
 };
 
@@ -70,8 +70,8 @@ exports.setRedTeam = (players) => {
 	redTeam = players;
 
 	for (const player of players) {
-		player.member.roles.remove(process.env.BLUE_TEAM_ROLE);
-		player.member.roles.add(process.env.RED_TEAM_ROLE);
+		player.member.roles.remove(process.env.BLUE_TEAM_ROLE).catch(() => {});
+		player.member.roles.add(process.env.RED_TEAM_ROLE).catch(() => {});
 	}
 };
 
@@ -221,8 +221,8 @@ exports.removePlayer = (member, reason = "") => {
 			this.syncUpdatedTeams();
 
 			//remove team role from player
-			member.roles.remove(process.env.BLUE_TEAM_ROLE);
-			member.roles.remove(process.env.RED_TEAM_ROLE);
+			member.roles.remove(process.env.BLUE_TEAM_ROLE).catch(() => {});
+			member.roles.remove(process.env.RED_TEAM_ROLE).catch(() => {});
 		} else {
 			//removed last player. end match
 			match.endMatch();
