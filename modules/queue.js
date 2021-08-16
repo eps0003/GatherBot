@@ -15,7 +15,7 @@ exports.add = (member, reason = "") => {
 		if (username) {
 			if (!this.has(member)) {
 				queue.push({ member, username });
-				member.roles.add(process.env.QUEUE_ROLE);
+				member.roles.add(process.env.QUEUE_ROLE).catch(() => {});
 
 				channel.send(`**${name}** has been **added** to the queue${reason} **(${queue.length}/${this.getSize()})**`);
 				console.log(`Added ${username} (${member.user.tag}) to the queue (${queue.length}/${this.getSize()})`);

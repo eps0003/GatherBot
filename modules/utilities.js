@@ -28,7 +28,7 @@ exports.clearRole = (role) => {
 	client.guilds.cache
 		.get(process.env.GUILD)
 		.roles.cache.get(role)
-		.members.forEach((member) => member.roles.remove(role));
+		.members.forEach((member) => member.roles.remove(role).catch(() => {}));
 };
 
 exports.updatePresence = () => {
