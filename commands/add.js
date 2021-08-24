@@ -9,7 +9,7 @@ module.exports = {
 	guildOnly: true,
 	tcprConnected: true,
 	execute(message, args) {
-		const status = message.member.presence.status;
+		const status = message.member.presence?.status || "offline";
 		if (match.isParticipating(message.member)) {
 			message.channel.send("You **cannot add** to the queue while **participating** in a match");
 		} else if (!util.canQueueWithStatus(status)) {
